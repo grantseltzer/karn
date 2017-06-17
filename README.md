@@ -17,17 +17,22 @@ Make it very easy for system admins of any level to correctly configure linux se
 
 There are two TOML specifications that make this work.
 
-1) **Declarations** - You can think of these as rule definitions. You define a declaration as corresponding to particular system calls and capabilities. Each file will correspond to just a single declaration. Here's a couple examples of what an declaration looks like:
+1) **Declarations** - You can think of these as rule definitions. You define a declaration as corresponding to particular system calls and capabilities. Each file will correspond to just a single declaration. Here's a couple examples of what a declaration looks like:
  
 _dns\_declaration.toml_
  ```
  [Seccomp]
- calls = [
+
+ default = "trap" 
+ architectures = [
+	 "x86"
+ ]
+ allow = [
          "sendto",
          "recvfrom",
          "socket",
          "connect"
- ]
+]
 
  [Apparmor]
  caps = []
