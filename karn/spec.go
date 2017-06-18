@@ -14,7 +14,7 @@ type Declaration struct {
 
 type Seccomp struct {
 	Default       string   `toml:"default"`
-	Architecutres []string `toml:"architectures"`
+	Architectures []string `toml:"architectures"`
 	Allow         []string `toml:"allow"`
 	Trap          []string `toml:"trap"`
 	Trace         []string `toml:"trace"`
