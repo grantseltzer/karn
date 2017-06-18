@@ -48,3 +48,18 @@ func ReadDeclarationFiles(directory string) ([]Declaration, error) {
 	}
 	return decs, nil
 }
+
+func ReadProfileString(tomlBlob string) (Profile, error) {
+	p := Profile{}
+	_, err := toml.Decode(tomlBlob, &p)
+	return p, err
+}
+
+func ReadProfileFromFile(path string) (Profile, error) {
+	prof := Profile{}
+	blob, err := ioutil.ReadFile(path)
+	if err != nil {
+		return prof, err
+	}
+	return ReadProfileString(string(blob))
+}
