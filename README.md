@@ -41,7 +41,7 @@ _dns\_declaration.toml_
 _chown_declaration.toml_
  ```
  [Seccomp]
- calls = [
+ allow = [
          "chown",
          "chown32",
          "fchown",
