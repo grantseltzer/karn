@@ -13,12 +13,13 @@ type Declaration struct {
 }
 
 type Seccomp struct {
-	Default string   `toml:"default"`
-	Allow   []string `toml:"allow"`
-	Trap    []string `toml:"trap"`
-	Trace   []string `toml:"trace"`
-	Kill    []string `toml:"kill"`
-	Errno   []string `toml:"errno"`
+	Default       string   `toml:"default"`
+	Architecutres []string `toml:"architectures"`
+	Allow         []string `toml:"allow"`
+	Trap          []string `toml:"trap"`
+	Trace         []string `toml:"trace"`
+	Kill          []string `toml:"kill"`
+	Errno         []string `toml:"errno"`
 }
 
 type AppArmor struct {
