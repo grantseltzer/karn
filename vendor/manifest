@@ -1,0 +1,23 @@
+{
+	"version": 0,
+	"dependencies": [
+		{
+			"importpath": "github.com/opencontainers/runtime-spec/specs-go",
+			"repository": "https://github.com/opencontainers/runtime-spec",
+			"vcs": "git",
+			"revision": "63b7c6c338e771fa52bd06ba1b5c1d5e9e51876a",
+			"branch": "master",
+			"path": "/specs-go",
+			"notests": true
+		},
+		{
+			"importpath": "github.com/opencontainers/runtime-tools/generate/seccomp",
+			"repository": "https://github.com/opencontainers/runtime-tools",
+			"vcs": "git",
+			"revision": "7150e8d99ea8ba04b8a763bc4108c252e2d5d1fc",
+			"branch": "master",
+			"path": "/generate/seccomp",
+			"notests": true
+		}
+	]
+}
