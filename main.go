@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/grantseltzer/karn/karn"
+	"github.com/GrantSeltzer/karn/parse"
 )
 
 const declarationDirectory = "/home/grant/karn/declarations/"

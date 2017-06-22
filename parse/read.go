@@ -1,7 +1,6 @@
 package karn
 
 import (
-	"fmt"
 	"io/ioutil"
 
 	"github.com/BurntSushi/toml"
@@ -41,7 +40,6 @@ func ReadDeclarationFiles(directory string) ([]Declaration, error) {
 	}
 
 	for _, file := range files {
-		fmt.Println(file.Name())
 		x, err := ReadDeclarationFromFile(directory + "/" + file.Name())
 		if err != nil {
 			return decs, err
