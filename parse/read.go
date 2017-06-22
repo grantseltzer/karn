@@ -2,6 +2,7 @@ package karn
 
 import (
 	"io/ioutil"
+	"strings"
 
 	"github.com/BurntSushi/toml"
 )
@@ -32,8 +33,8 @@ func ReadDeclarationFromFile(path string) (Declaration, error) {
 	return ReadDeclarationString(string(blob))
 }
 
-func ReadDeclarationFiles(directory string) ([]Declaration, error) {
-	decs := []Declaration{}
+func ReadDeclarationFiles(directory string) (map[string]*Declaration, error) {
+	decs := map[string]*Declaration{}
 	files, err := ioutil.ReadDir(directory)
 	if err != nil {
 		return decs, err
@@ -44,7 +45,8 @@ func ReadDeclarationFiles(directory string) ([]Declaration, error) {
 		if err != nil {
 			return decs, err
 		}
-		decs = append(decs, x)
+		declarationName := strings.Split(file.Name(), "_")
+		decs[declarationName[0]] = &x
 	}
 	return decs, nil
 }

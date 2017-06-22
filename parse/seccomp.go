@@ -1,10 +1,46 @@
 package karn
 
 import (
+	"errors"
 	"fmt"
 
 	specs "github.com/opencontainers/runtime-spec/specs-go"
 )
+
+func BuildSeccompConfig(profilePath string, declarationsDirectory string) error {
+	Profile, err := ReadProfileFromFile(profilePath)
+	if err != nil {
+		return err
+	}
+
+	Declarations, err := ReadDeclarationFiles(declarationsDirectory)
+	if err != nil {
+		return err
+	}
+
+	seccompSlice := []Seccomp{}
+	for _, v := range Declarations {
+		seccompSlice = append(seccompSlice, v.Seccomp)
+	}
+	defaultAction := DetermineSeccompDefault(seccompSlice)
+	architecture := DetermineSeccompArchitectures(seccompSlice)
+
+	for _, i := range Profile.FileSystem {
+		dec := Declarations[i]
+		if dec == nil {
+			// Handle DECLARATION NOT FOUND, should probably be fatal
+			return errors.New("")
+		}
+		actions, err := CollectSeccompActions(dec.Seccomp)
+		if err != nil {
+			return err
+		}
+	}
+
+	// Create specs.Seccomp profile, add actions 1 by 1 using runtime-tools/generate package, use defaultAction and architecture
+
+	return nil
+}
 
 func CollectSeccompActions(s Seccomp) ([]specs.LinuxSyscall, error) {
 

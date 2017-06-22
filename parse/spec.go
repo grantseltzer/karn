@@ -1,10 +1,10 @@
 package karn
 
 type Profile struct {
-	Network    []Declaration `toml:"Network"`
-	FileSystem []Declaration `toml:"FileSystem"`
-	Runtime    []Declaration `toml:"Runtime"`
-	User       []Declaration `toml:"User"`
+	Network    []string `toml:"Network"`
+	FileSystem []string `toml:"FileSystem"`
+	Runtime    []string `toml:"Runtime"`
+	User       []string `toml:"User"`
 }
 
 type Declaration struct {
