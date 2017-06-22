@@ -1,0 +1,9 @@
+package: github.com/GrantSeltzer/karn
+import:
+- package: github.com/BurntSushi/toml
+- package: github.com/grantseltzer/karn
+  subpackages:
+  - karn
+- package: github.com/opencontainers/runtime-spec
+  subpackages:
+  - specs-go

@@ -1,0 +1,14 @@
+hash: 663d64d9bf515766de81172ec73cd8d5522fa79afce9ee2f876bcceff0578aa2
+updated: 2017-06-22T16:59:27.443121205-04:00
+imports:
+- name: github.com/BurntSushi/toml
+  version: b26d9c308763d68093482582cea63d69be07a0f0
+- name: github.com/grantseltzer/karn
+  version: bc9be4cb4421ed9bbfb40de2ba8c262cca0cfef2
+  subpackages:
+  - karn
+- name: github.com/opencontainers/runtime-spec
+  version: 63b7c6c338e771fa52bd06ba1b5c1d5e9e51876a
+  subpackages:
+  - specs-go
+testImports: []
