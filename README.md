@@ -62,11 +62,8 @@ _chown_declaration.toml_
 
 _my_karn_profile.toml_
  ```
- [Network]
- declarations = ["dns"]
-
- [Filesystem]
- declarations = ["chown"]
+Network = ["dns"]
+FileSystem = ["chown"]
  ```
 
  This, when passed through Karn, would generate a seccomp whitelist and apparmor profile corresponding to the declarations above.
