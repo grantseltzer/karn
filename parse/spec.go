@@ -1,15 +1,16 @@
 package karn
 
 type Profile struct {
-	Network    []string `toml:"Network"`
-	FileSystem []string `toml:"FileSystem"`
-	Runtime    []string `toml:"Runtime"`
-	User       []string `toml:"User"`
+	// x map[string][]string
+	Network    []string `toml:"Network,omitempty"`
+	FileSystem []string `toml:"FileSystem,omitempty"`
+	Runtime    []string `toml:"Runtime,omitempty"`
+	User       []string `toml:"User,omitempty"`
 }
 
 type Declaration struct {
-	Seccomp  Seccomp  `toml:"Seccomp"`
-	AppArmor AppArmor `toml:"AppArmor"`
+	Seccomp  Seccomp  `toml:"Seccomp,omitempty"`
+	AppArmor AppArmor `toml:"AppArmor,omitempty"`
 }
 
 type Seccomp struct {

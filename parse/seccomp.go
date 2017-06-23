@@ -7,15 +7,16 @@ import (
 	specs "github.com/opencontainers/runtime-spec/specs-go"
 )
 
-func BuildSeccompConfig(profilePath string, declarationsDirectory string) error {
+func BuildSeccompConfig(profilePath string, declarationsDirectory string) (specs.LinuxSeccomp, error) {
+	seccompSpec := specs.LinuxSeccomp{}
 	Profile, err := ReadProfileFromFile(profilePath)
 	if err != nil {
-		return err
+		return seccompSpec, err
 	}
 
 	Declarations, err := ReadDeclarationFiles(declarationsDirectory)
 	if err != nil {
-		return err
+		return seccompSpec, err
 	}
 
 	seccompSlice := []Seccomp{}
@@ -23,37 +24,41 @@ func BuildSeccompConfig(profilePath string, declarationsDirectory string) error 
 		seccompSlice = append(seccompSlice, v.Seccomp)
 	}
 	defaultAction := DetermineSeccompDefault(seccompSlice)
-	architecture := DetermineSeccompArchitectures(seccompSlice)
+	architectures := DetermineSeccompArchitectures(seccompSlice)
 
+	syscalls := []specs.LinuxSyscall{}
 	for _, i := range Profile.FileSystem {
 		dec := Declarations[i]
 		if dec == nil {
-			// Handle DECLARATION NOT FOUND, should probably be fatal
-			return errors.New("")
+			return seccompSpec, errors.New("declaration not found")
 		}
-		actions, err := CollectSeccompActions(dec.Seccomp)
+		syscalls, err = CollectSeccompActions(dec.Seccomp)
 		if err != nil {
-			return err
+			return seccompSpec, err
 		}
 	}
 
 	// Create specs.Seccomp profile, add actions 1 by 1 using runtime-tools/generate package, use defaultAction and architecture
+	seccompSpec.DefaultAction = specs.LinuxSeccompAction(defaultAction)
+	for _, a := range architectures {
+		seccompSpec.Architectures = append(seccompSpec.Architectures, specs.Arch(a))
+	}
+	seccompSpec.Syscalls = syscalls
 
-	return nil
+	return seccompSpec, nil
 }
 
 func CollectSeccompActions(s Seccomp) ([]specs.LinuxSyscall, error) {
 
 	actions := map[string][]string{
-		"allow": s.Allow,
-		"trap":  s.Trap,
-		"trace": s.Trace,
-		"kill":  s.Kill,
-		"errno": s.Errno,
+		"Allow": s.Allow,
+		"Trap":  s.Trap,
+		"Trace": s.Trace,
+		"Kill":  s.Kill,
+		"Errno": s.Errno,
 	}
 
 	syscalls := []specs.LinuxSyscall{}
-
 	for k, v := range actions {
 		syscall := specs.LinuxSyscall{}
 		syscall.Names = v
@@ -70,14 +75,14 @@ func CollectSeccompActions(s Seccomp) ([]specs.LinuxSyscall, error) {
 
 func DetermineSeccompDefault(seccomps []Seccomp) string {
 	precedence := map[string]int{
-		"Allow": 0,
-		"Trap":  1,
-		"Trace": 2,
-		"Errno": 3,
-		"Kill":  4,
+		"SCMP_ACT_ALLOW": 0,
+		"SCMP_ACT_TRAP":  1,
+		"SCMP_ACT_TRACE": 2,
+		"SCMP_ACT_ERRNO": 3,
+		"SCMP_ACT_KILL":  4,
 	}
 
-	currentDefault := "Allow"
+	currentDefault := "SCMP_ACT_ALLOW"
 
 	for _, s := range seccomps {
 		if precedence[s.Default] > precedence[currentDefault] {
@@ -110,11 +115,11 @@ func appendIfMissing(arches *[]string, newArch string) {
 func parseAction(action string) (specs.LinuxSeccompAction, error) {
 
 	var actions = map[string]specs.LinuxSeccompAction{
-		"allow": specs.ActAllow,
-		"errno": specs.ActErrno,
-		"kill":  specs.ActKill,
-		"trace": specs.ActTrace,
-		"trap":  specs.ActTrap,
+		"Allow": specs.ActAllow,
+		"Errno": specs.ActErrno,
+		"Kill":  specs.ActKill,
+		"Trace": specs.ActTrace,
+		"Trap":  specs.ActTrap,
 	}
 
 	a, ok := actions[action]

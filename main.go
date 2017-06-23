@@ -1,26 +1,22 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 
-	"github.com/GrantSeltzer/karn/parse"
+	parse "github.com/GrantSeltzer/karn/parse"
 )
 
-const declarationDirectory = "/home/grant/karn/declarations/"
+const declarationDirectory = "declarations/"
 
 func main() {
-	Declarations, err := karn.ReadDeclarationFiles(declarationDirectory)
+
+	x, err := parse.BuildSeccompConfig("prof.toml", declarationDirectory)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	Seccomps := []karn.Seccomp{}
-
-	for _, d := range Declarations {
-		Seccomps = append(Seccomps, d.Seccomp)
-	}
-
-	seccompDefault := karn.DetermineSeccompDefault(Seccomps)
-	fmt.Println(seccompDefault)
+	asJson, _ := json.Marshal(x)
+	fmt.Println(string(asJson))
 }
