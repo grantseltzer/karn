@@ -1,6 +1,6 @@
 # KARN
 
-#### STATUS: non-existant
+#### STATUS: Pre-alpha
 
 ----
 

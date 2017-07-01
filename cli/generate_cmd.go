@@ -9,9 +9,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type GenerateOptions struct{}
+type GenerateOptions struct {
+	DeclarationDirectory string
+}
 
-func NewGenerateCmd(out io.Writer, declarationDirectory string) *cobra.Command {
+func NewGenerateCmd(out io.Writer, arguments []string) *cobra.Command {
 
 	genOpts := GenerateOptions{}
 
@@ -20,21 +22,19 @@ func NewGenerateCmd(out io.Writer, declarationDirectory string) *cobra.Command {
 		Short: "generate seccomp and apparmor profiles from a karn profile",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// TODO: verify arguments
-			return genOpts.Run(out, declarationDirectory, args[0])
+			return genOpts.Run(out, arguments)
 		},
 	}
 
-	// Template for adding flags:
-	// g := generateCmd.PersistentFlags()
-	// g.StringVar(&genOpts.____, "flagName", "defaultValue", "description")
-	// ...
+	g := generateCmd.PersistentFlags()
+	g.StringVarP(&genOpts.DeclarationDirectory, "declarations", "d", "~/.karn/declarations", "directory of declaration definitions")
 
 	return generateCmd
 }
 
-func (genOpts *GenerateOptions) Run(out io.Writer, declarationDirectory string, pathToProfile string) error {
+func (genOpts *GenerateOptions) Run(out io.Writer, args []string) error {
 
-	x, err := parse.BuildSeccompConfig(pathToProfile, declarationDirectory)
+	x, err := parse.BuildSeccompConfig(args[len(args)-1], genOpts.DeclarationDirectory)
 	if err != nil {
 		log.Fatal(err)
 	}

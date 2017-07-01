@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func NewRootCmd(arguments []string, out io.Writer, declarationDirectory string) *cobra.Command {
+func NewRootCmd(arguments []string, out io.Writer) *cobra.Command {
 
 	var karnRootCommand = &cobra.Command{
 		Use:   "capsule8 [OPTIONS] <Profile_Name.toml>",
@@ -26,8 +26,9 @@ func NewRootCmd(arguments []string, out io.Writer, declarationDirectory string) 
 
 	// Uncomment to add flags/subcommands
 	// rootFlags := karnRootCommand.PersistentFlags()
+
 	karnRootCommand.AddCommand(
-		NewGenerateCmd(out, declarationDirectory),
+		NewGenerateCmd(out, arguments),
 		NewVerifyCmd(),
 	)
 
