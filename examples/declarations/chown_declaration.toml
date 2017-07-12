@@ -1,6 +1,4 @@
-[Seccomp]
-default = "SCMP_ACT_KILL"
-architectures = ["amd64", "arm"]
+[System-Calls]
 allow = [
         "chown",
         "chown32",
@@ -11,5 +9,6 @@ allow = [
         "lchown32"
 ]
 
-[Apparmor]
-capabilities = ["CAP_CHOWN"]
+[Capabilities] 
+Allow = ["chown"]
+

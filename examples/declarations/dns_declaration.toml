@@ -1,0 +1,7 @@
+[System-Calls]
+Allow = [
+        "sendto",
+        "recvfrom",
+        "socket",
+        "connect"
+]

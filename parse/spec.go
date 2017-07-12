@@ -1,28 +1,41 @@
 package karn
 
-type Profile struct {
-	// x map[string][]string
-	Network    []string `toml:"Network,omitempty"`
-	FileSystem []string `toml:"FileSystem,omitempty"`
-	Runtime    []string `toml:"Runtime,omitempty"`
-	User       []string `toml:"User,omitempty"`
-}
-
 type Declaration struct {
-	Seccomp  Seccomp  `toml:"Seccomp,omitempty"`
-	AppArmor AppArmor `toml:"AppArmor,omitempty"`
+	SystemCalls  SystemCalls  `toml:"System-Calls,omitempty"`
+	Capabilities Capabilities `toml:"Capabilities,omitempty"`
+	Files        Files        `toml:"File,omitemptys"`
+	Network      Network      `toml:"Network,omitempty"`
+	System       System       `toml:"System,omitempty"`
 }
 
-type Seccomp struct {
-	Default       string   `toml:"default"`
-	Architectures []string `toml:"architectures"`
-	Allow         []string `toml:"allow"`
-	Trap          []string `toml:"trap"`
-	Trace         []string `toml:"trace"`
-	Kill          []string `toml:"kill"`
-	Errno         []string `toml:"errno"`
+type System struct {
+	Architectures        []string `toml:"Architectures,omitempty"`
+	DefaultSyscallAction string   `toml:"DefaultSyscallAction,omitempty"`
 }
 
-type AppArmor struct {
-	Capabilities []string `toml:"capabilities"`
+type SystemCalls struct {
+	Allow []string `toml:"Allow,omitempty"`
+	Trap  []string `toml:"Trap,omitempty"`
+	Trace []string `toml:"Trace,omitempty"`
+	Kill  []string `toml:"Kill,omitempty"`
+	Errno []string `toml:"Errno,omitempty"`
+}
+
+type Capabilities struct {
+	Allow []string `toml:"Allow,omitempty"`
+	Deny  []string `toml:"Deny,omitempty"`
+}
+
+type Files struct {
+	ReadOnly   []string `toml:"ReadOnly,omitempty"`
+	Writeable  []string `toml:"Writeable,omitempty"`
+	LogOnWrite []string `toml:"LogOnWrite,omitempty"`
+	AllowExec  []string `toml:"AllowExec,omitempty"`
+	DenyExec   []string `toml:"DenyExec,omitempty"`
+}
+
+type Network struct {
+	Raw       bool     `toml:"Raw,omitempty"`
+	Packet    bool     `toml:"Packet,omitempty"`
+	Protocols []string `toml:"Protocols,omitempty"`
 }

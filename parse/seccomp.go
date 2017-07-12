@@ -7,38 +7,42 @@ import (
 	specs "github.com/opencontainers/runtime-spec/specs-go"
 )
 
-func BuildSeccompConfig(profilePath string, declarationsDirectory string) (specs.LinuxSeccomp, error) {
+// BuildSeccompConfig takes the user specified declarations and creates the seccomp output
+func BuildSeccompConfig(specifiedDeclarations []string, declarationsDirectory string) (specs.LinuxSeccomp, error) {
 	seccompSpec := specs.LinuxSeccomp{}
-	Profile, err := ReadProfileFromFile(profilePath)
+
+	// Read declarations into memory from declaration directory
+	Declarations, err := ReadDeclarationFiles(specifiedDeclarations, declarationsDirectory)
 	if err != nil {
 		return seccompSpec, err
 	}
 
-	Declarations, err := ReadDeclarationFiles(declarationsDirectory)
+	// Parse specified declarations for seccomp default action
+	defaultAction, err := parseAction(DetermineSeccompDefault(Declarations))
 	if err != nil {
 		return seccompSpec, err
 	}
 
-	seccompSlice := []Seccomp{}
-	for _, v := range Declarations {
-		seccompSlice = append(seccompSlice, v.Seccomp)
+	// Parse specified declarations for system architectures
+	architectures, err := DetermineSeccompArchitectures(Declarations)
+	if err != nil {
+		return seccompSpec, err
 	}
-	defaultAction := DetermineSeccompDefault(seccompSlice)
-	architectures := DetermineSeccompArchitectures(seccompSlice)
 
+	// Parse specified declarations for syscall filters
 	syscalls := []specs.LinuxSyscall{}
-	for _, i := range Profile.FileSystem {
+	for _, i := range specifiedDeclarations {
 		dec := Declarations[i]
 		if dec == nil {
 			return seccompSpec, errors.New("declaration not found")
 		}
-		syscalls, err = CollectSeccompActions(dec.Seccomp)
+		syscalls, err = CollectSeccompActions(dec.SystemCalls, syscalls)
 		if err != nil {
 			return seccompSpec, err
 		}
 	}
 
-	// Create specs.Seccomp profile, add actions 1 by 1 using runtime-tools/generate package, use defaultAction and architecture
+	// Create runtime-spec Seccomp profile, add actions 1 by 1 using runtime-tools/generate package, use defaultAction and architecture
 	seccompSpec.DefaultAction = specs.LinuxSeccompAction(defaultAction)
 	for _, a := range architectures {
 		seccompSpec.Architectures = append(seccompSpec.Architectures, specs.Arch(a))
@@ -48,78 +52,107 @@ func BuildSeccompConfig(profilePath string, declarationsDirectory string) (specs
 	return seccompSpec, nil
 }
 
-func CollectSeccompActions(s Seccomp) ([]specs.LinuxSyscall, error) {
+// CollectSeccompActions takes a SystemCalls struct from a declaration and appends it to the outputted spec
+func CollectSeccompActions(s SystemCalls, existingSyscalls []specs.LinuxSyscall) ([]specs.LinuxSyscall, error) {
 
 	actions := map[string][]string{
-		"Allow": s.Allow,
-		"Trap":  s.Trap,
-		"Trace": s.Trace,
-		"Kill":  s.Kill,
-		"Errno": s.Errno,
+		"allow": s.Allow,
+		"trap":  s.Trap,
+		"trace": s.Trace,
+		"kill":  s.Kill,
+		"errno": s.Errno,
 	}
 
-	syscalls := []specs.LinuxSyscall{}
+	appended := false
+
+	// Iterate through new syscalls actions
 	for k, v := range actions {
-		syscall := specs.LinuxSyscall{}
-		syscall.Names = v
-		parsedAction, err := parseAction(k)
-		if err != nil {
-			return syscalls, err
+
+		// Skip when no actions are specified
+		if v == nil {
+			continue
 		}
-		syscall.Action = parsedAction
-		syscalls = append(syscalls, syscall)
+
+		action, _ := parseAction(k)
+
+		// Check if there's already a matching rule TODO: check arguments
+		for i := range existingSyscalls {
+			if existingSyscalls[i].Action == action {
+				existingSyscalls[i].Names = append(existingSyscalls[i].Names, v...)
+				appended = true
+			}
+		}
+
+		// Create new rule
+		if !appended {
+			syscall := specs.LinuxSyscall{}
+			syscall.Names = v
+			syscall.Action = action
+			existingSyscalls = append(existingSyscalls, syscall)
+			appended = false
+		}
 	}
 
-	return syscalls, nil
+	return existingSyscalls, nil
 }
 
-func DetermineSeccompDefault(seccomps []Seccomp) string {
+// DetermineSeccompDefault takes the mapping of specified declarations and returns the default action
+func DetermineSeccompDefault(specifiedDeclarations map[string]*Declaration) string {
+
+	// Arbitrary rule for precedences of actions to be set as default,
+	// should explore other mechanism for determining this
 	precedence := map[string]int{
-		"SCMP_ACT_ALLOW": 0,
-		"SCMP_ACT_TRAP":  1,
-		"SCMP_ACT_TRACE": 2,
-		"SCMP_ACT_ERRNO": 3,
-		"SCMP_ACT_KILL":  4,
+		"allow": 0,
+		"trap":  1,
+		"trace": 2,
+		"errno": 3,
+		"kill":  4,
 	}
 
-	currentDefault := "SCMP_ACT_ALLOW"
+	currentDefault := "allow"
 
-	for _, s := range seccomps {
-		if precedence[s.Default] > precedence[currentDefault] {
-			currentDefault = s.Default
+	for _, s := range specifiedDeclarations {
+		if precedence[s.System.DefaultSyscallAction] > precedence[currentDefault] {
+			currentDefault = s.System.DefaultSyscallAction
 		}
 	}
 	return currentDefault
 }
 
-func DetermineSeccompArchitectures(seccomps []Seccomp) []string {
+// DetermineSeccompArchitectures takes the mapping of specified delarations and returns the specified architectures
+func DetermineSeccompArchitectures(specifiedDeclarations map[string]*Declaration) ([]string, error) {
 	architectures := []string{}
-	for _, s := range seccomps {
-		for _, a := range s.Architectures {
-			appendIfMissing(&architectures, a)
+	for _, s := range specifiedDeclarations {
+		for _, a := range s.System.Architectures {
+			arch, err := parseArchitecture(a)
+			if err != nil {
+				return architectures, err
+			}
+			appendIfMissing(&architectures, string(arch))
 		}
 	}
-	return architectures
+	return architectures, nil
 }
 
-func appendIfMissing(arches *[]string, newArch string) {
-	for _, arch := range *arches {
-		if arch == newArch {
+// safe append
+func appendIfMissing(existing *[]string, new string) {
+	for _, element := range *existing {
+		if element == new {
 			return
 		}
 	}
-	*arches = append(*arches, newArch)
+	*existing = append(*existing, new)
 }
 
-// Take passed action, return the SCMP_ACT_<ACTION> version of it
+// Take passed action, return the oci spec version of it
 func parseAction(action string) (specs.LinuxSeccompAction, error) {
 
 	var actions = map[string]specs.LinuxSeccompAction{
-		"Allow": specs.ActAllow,
-		"Errno": specs.ActErrno,
-		"Kill":  specs.ActKill,
-		"Trace": specs.ActTrace,
-		"Trap":  specs.ActTrap,
+		"allow": specs.ActAllow,
+		"errno": specs.ActErrno,
+		"kill":  specs.ActKill,
+		"trace": specs.ActTrace,
+		"trap":  specs.ActTrap,
 	}
 
 	a, ok := actions[action]
@@ -127,4 +160,33 @@ func parseAction(action string) (specs.LinuxSeccompAction, error) {
 		return "", fmt.Errorf("unrecognized action: %s", action)
 	}
 	return a, nil
+}
+
+// Take passes arch, return the oci spec version of it
+func parseArchitecture(arch string) (specs.Arch, error) {
+
+	var arches = map[string]specs.Arch{
+		"x86":       specs.ArchX86,
+		"x86_64":    specs.ArchX86_64,
+		"x32":       specs.ArchX32,
+		"arm":       specs.ArchARM,
+		"aarch64":   specs.ArchAARCH64,
+		"mips":      specs.ArchMIPS,
+		"mips64":    specs.ArchMIPS64,
+		"mips64n32": specs.ArchMIPS64N32,
+		"ppc":       specs.ArchPPC,
+		"ppc64":     specs.ArchPPC64,
+		"ppc64LE":   specs.ArchPPC64LE,
+		"s390":      specs.ArchS390,
+		"s390x":     specs.ArchS390X,
+		"parisc":    specs.ArchPARISC,
+		"parsic64":  specs.ArchPARISC64,
+	}
+
+	a, ok := arches[arch]
+	if !ok {
+		return "", fmt.Errorf("unrecognized architecture: %s", arch)
+	}
+	return a, nil
+
 }

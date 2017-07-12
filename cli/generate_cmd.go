@@ -1,16 +1,17 @@
 package cli
 
 import (
-	"fmt"
 	"io"
-	"log"
+	"os"
+
+	"encoding/json"
 
 	parse "github.com/GrantSeltzer/karn/parse"
 	"github.com/spf13/cobra"
 )
 
 type GenerateOptions struct {
-	DeclarationDirectory string
+	declarationDirectory string
 }
 
 func NewGenerateCmd(out io.Writer, arguments []string) *cobra.Command {
@@ -18,7 +19,7 @@ func NewGenerateCmd(out io.Writer, arguments []string) *cobra.Command {
 	genOpts := GenerateOptions{}
 
 	generateCmd := &cobra.Command{
-		Use:   "generate [options] <PROFILE_NAME>",
+		Use:   "generate [<DECLARATION>,...]",
 		Short: "generate seccomp and apparmor profiles from a karn profile",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// TODO: verify arguments
@@ -26,19 +27,27 @@ func NewGenerateCmd(out io.Writer, arguments []string) *cobra.Command {
 		},
 	}
 
+	homedir := os.Getenv("HOME")
+
 	g := generateCmd.PersistentFlags()
-	g.StringVarP(&genOpts.DeclarationDirectory, "declarations", "d", "~/.karn/declarations", "directory of declaration definitions")
+	g.StringVarP(&genOpts.declarationDirectory, "declarations", "d", homedir+"/.karn/declarations", "directory of declaration definitions")
 
 	return generateCmd
 }
 
 func (genOpts *GenerateOptions) Run(out io.Writer, args []string) error {
 
-	x, err := parse.BuildSeccompConfig(args[len(args)-1], genOpts.DeclarationDirectory)
+	x, err := parse.BuildSeccompConfig(args[2:len(args)], genOpts.declarationDirectory)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 
-	out.Write([]byte(fmt.Sprintf("%+v\n", x)))
+	seccompJSONProfile, err := json.MarshalIndent(x, "", " ")
+	if err != nil {
+		return err
+	}
+
+	out.Write(seccompJSONProfile)
+
 	return nil
 }
