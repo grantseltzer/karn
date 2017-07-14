@@ -2,6 +2,8 @@
 
 #### STATUS: Pre-alpha
 
+Right now only seccomp profiles are outputted. Support for specific seccomp arguments is also not yet supported (but will be soon). Apparmor profile output will be coming soon.
+
 ----
 
 Karn is an admin-friendly tool for creating [seccomp](https://en.wikipedia.org/wiki/Seccomp) and [apparmor](https://en.wikipedia.org/wiki/AppArmor) profiles. Originally proposed [here](https://gist.github.com/jessfraz/3a84023ff85471696ee33a20031b9e7b) as part of the [Linux Container Hardening](https://containerhardening.org/) project.
