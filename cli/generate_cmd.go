@@ -14,7 +14,7 @@ type GenerateOptions struct {
 	declarationDirectory string
 }
 
-func NewGenerateCmd(out io.Writer, arguments []string) *cobra.Command {
+func NewGenerateCmd(out io.Writer) *cobra.Command {
 
 	genOpts := GenerateOptions{}
 
@@ -23,7 +23,7 @@ func NewGenerateCmd(out io.Writer, arguments []string) *cobra.Command {
 		Short: "generate seccomp and apparmor profiles from a karn profile",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// TODO: verify arguments
-			return genOpts.Run(out, arguments)
+			return genOpts.Run(out, args)
 		},
 	}
 
@@ -37,7 +37,7 @@ func NewGenerateCmd(out io.Writer, arguments []string) *cobra.Command {
 
 func (genOpts *GenerateOptions) Run(out io.Writer, args []string) error {
 
-	x, err := parse.BuildSeccompConfig(args[2:len(args)], genOpts.declarationDirectory)
+	x, err := parse.BuildSeccompConfig(args, genOpts.declarationDirectory)
 	if err != nil {
 		return err
 	}

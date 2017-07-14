@@ -28,7 +28,7 @@ func NewRootCmd(arguments []string, out io.Writer) *cobra.Command {
 	// rootFlags := karnRootCommand.PersistentFlags()
 
 	karnRootCommand.AddCommand(
-		NewGenerateCmd(out, arguments),
+		NewGenerateCmd(out),
 		NewVerifyCmd(),
 	)
 
