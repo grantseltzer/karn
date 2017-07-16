@@ -2,7 +2,7 @@
 # Author: Grant Seltzer (grant@capsule8.com)
 
 # Go parameters
-GOCMD=go
+GOCMD=go1.9beta2
 GOBUILD=$(GOCMD) build
 GOCLEAN=$(GOCMD) clean
 GOINSTALL=$(GOCMD) install
@@ -17,7 +17,7 @@ BINARY="karn"
 
 .PHONY: build man clean install test fmt vet help
 
-all: build man
+all: build
 
 build:
 	$(GOBUILD) -o ./dist/$(BINARY) .

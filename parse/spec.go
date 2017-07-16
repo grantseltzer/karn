@@ -1,9 +1,13 @@
-package karn
+package parse
+
+import (
+	bane "github.com/jessfraz/bane/apparmor"
+)
 
 type Declaration struct {
 	SystemCalls  SystemCalls  `toml:"System-Calls,omitempty"`
 	Capabilities Capabilities `toml:"Capabilities,omitempty"`
-	Files        Files        `toml:"File,omitemptys"`
+	Filesystem   FileSystem   `toml:"Filesystem,omitempty"`
 	Network      Network      `toml:"Network,omitempty"`
 	System       System       `toml:"System,omitempty"`
 }
@@ -21,21 +25,7 @@ type SystemCalls struct {
 	Errno []string `toml:"Errno,omitempty"`
 }
 
-type Capabilities struct {
-	Allow []string `toml:"Allow,omitempty"`
-	Deny  []string `toml:"Deny,omitempty"`
-}
-
-type Files struct {
-	ReadOnly   []string `toml:"ReadOnly,omitempty"`
-	Writeable  []string `toml:"Writeable,omitempty"`
-	LogOnWrite []string `toml:"LogOnWrite,omitempty"`
-	AllowExec  []string `toml:"AllowExec,omitempty"`
-	DenyExec   []string `toml:"DenyExec,omitempty"`
-}
-
-type Network struct {
-	Raw       bool     `toml:"Raw,omitempty"`
-	Packet    bool     `toml:"Packet,omitempty"`
-	Protocols []string `toml:"Protocols,omitempty"`
-}
+type AppArmorProfileConfig = bane.ProfileConfig
+type FileSystem = bane.FsConfig
+type Network = bane.NetConfig
+type Capabilities = bane.CapConfig
