@@ -1,0 +1,68 @@
+# name of the profile, we will auto prefix with `docker-`
+# so the final profile name will be `docker-nginx-sample`
+Name = "nginx-sample"
+
+[Filesystem]
+# read only paths for the container
+ReadOnlyPaths = [
+	"/bin/**",
+	"/boot/**",
+	"/dev/**",
+	"/etc/**",
+	"/home/**",
+	"/lib/**",
+	"/lib64/**",
+	"/media/**",
+	"/mnt/**",
+	"/opt/**",
+	"/proc/**",
+	"/root/**",
+	"/sbin/**",
+	"/srv/**",
+	"/tmp/**",
+	"/sys/**",
+	"/usr/**",
+]
+
+# paths where you want to log on write
+LogOnWritePaths = [
+	"/**"
+]
+
+# paths where you can write
+WritablePaths = [
+	"/var/run/nginx.pid"
+]
+
+# allowed executable files for the container
+AllowExec = [
+	"/usr/sbin/nginx"
+]
+
+# denied executable files
+DenyExec = [
+	"/bin/dash",
+	"/bin/sh",
+	"/usr/bin/top"
+]
+
+# allowed capabilities
+[Capabilities]
+Allow = [
+	"chown",
+	"dac_override",
+	"setuid",
+	"setgid",
+	"net_bind_service"
+]
+
+[Network]
+# if you don't need to ping in a container, you can probably
+# set Raw to false and deny network raw
+Raw = false
+Packet = false
+Protocols = [
+	"tcp",
+	"udp",
+	"icmp"
+]
