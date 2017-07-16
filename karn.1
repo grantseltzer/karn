@@ -4,7 +4,29 @@ Karn - A simple and easy to use security profile generator
 .SH SYNOPSIS
 karn [OPTIONS] <Name_Of_Profile.toml>
 .SH DESCRIPTION
-A command line tool for generating seccomp and apparmor profiles to pass to your container runtime of choice
+Generate apparmor and seccomp profiles from a simple permission scheme
+
+.SH COMMANDS
+
+.B [*] generate
+\- generate profiles 
+
+Usage: `karn generate perm1 perm2...`
+
+Example: `karn generate dns chown`
+
+.B \t--apparmor 
+\- toggle output of apparmor profile 
+
+.B \t--seccomp
+\- toggle output of seccomp profile
+
+.B \t--declarations, -d
+\- specify directory of declarations
+
+.B \t--help
+\- output help text
+
 
 .SH VERSION
 Alpha - 0.1
