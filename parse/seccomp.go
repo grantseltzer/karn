@@ -14,19 +14,19 @@ func BuildSeccompConfig(specifiedDeclarations []string, declarationsDirectory st
 	seccompSpec := specs.LinuxSeccomp{}
 
 	// Read declarations into memory from declaration directory
-	Declarations, err := ReadDeclarationFiles(specifiedDeclarations, declarationsDirectory)
+	Declarations, err := readDeclarationFiles(specifiedDeclarations, declarationsDirectory)
 	if err != nil {
 		return seccompSpec, err
 	}
 
 	// Parse specified declarations for seccomp default action
-	defaultAction, err := parseAction(DetermineSeccompDefault(Declarations))
+	defaultAction, err := parseAction(determineSeccompDefault(Declarations))
 	if err != nil {
 		return seccompSpec, err
 	}
 
 	// Parse specified declarations for system architectures
-	architectures, err := DetermineSeccompArchitectures(Declarations)
+	architectures, err := determineSeccompArchitectures(Declarations)
 	if err != nil {
 		return seccompSpec, err
 	}
@@ -38,7 +38,7 @@ func BuildSeccompConfig(specifiedDeclarations []string, declarationsDirectory st
 		if dec == nil {
 			return seccompSpec, errors.New("declaration not found")
 		}
-		syscalls, err = CollectSeccompActions(dec.SystemCalls, syscalls)
+		syscalls, err = collectSeccompActions(dec.SystemCalls, syscalls)
 		if err != nil {
 			return seccompSpec, err
 		}
@@ -68,8 +68,8 @@ func WriteSeccompProfile(out io.Writer, specifiedDeclarations []string, declarat
 	return nil
 }
 
-// CollectSeccompActions takes a SystemCalls struct from a declaration and appends it to the outputted spec
-func CollectSeccompActions(s SystemCalls, existingSyscalls []specs.LinuxSyscall) ([]specs.LinuxSyscall, error) {
+// collectSeccompActions takes a SystemCalls struct from a declaration and appends it to the outputted spec
+func collectSeccompActions(s SystemCalls, existingSyscalls []specs.LinuxSyscall) ([]specs.LinuxSyscall, error) {
 
 	actions := map[string][]string{
 		"allow": s.Allow,
@@ -112,8 +112,8 @@ func CollectSeccompActions(s SystemCalls, existingSyscalls []specs.LinuxSyscall)
 	return existingSyscalls, nil
 }
 
-// DetermineSeccompDefault takes the mapping of specified declarations and returns the default action
-func DetermineSeccompDefault(specifiedDeclarations map[string]*Declaration) string {
+// determineSeccompDefault takes the mapping of specified declarations and returns the default action
+func determineSeccompDefault(specifiedDeclarations map[string]*Declaration) string {
 
 	// Arbitrary rule for precedences of actions to be set as default,
 	// should explore other mechanism for determining this
@@ -135,8 +135,8 @@ func DetermineSeccompDefault(specifiedDeclarations map[string]*Declaration) stri
 	return currentDefault
 }
 
-// DetermineSeccompArchitectures takes the mapping of specified delarations and returns the specified architectures
-func DetermineSeccompArchitectures(specifiedDeclarations map[string]*Declaration) ([]string, error) {
+// determineSeccompArchitectures takes the mapping of specified delarations and returns the specified architectures
+func determineSeccompArchitectures(specifiedDeclarations map[string]*Declaration) ([]string, error) {
 	architectures := []string{}
 	for _, s := range specifiedDeclarations {
 		for _, a := range s.System.Architectures {

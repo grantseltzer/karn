@@ -3,7 +3,7 @@ package parse
 import "io"
 
 func WriteAppArmorProfile(out io.Writer, specifiedDeclarations []string, declarationsDirectory string) error {
-	Declarations, err := ReadDeclarationFiles(specifiedDeclarations, declarationsDirectory)
+	Declarations, err := readDeclarationFiles(specifiedDeclarations, declarationsDirectory)
 	if err != nil {
 		return err
 	}
