@@ -26,6 +26,6 @@ type SystemCalls struct {
 }
 
 type AppArmorProfileConfig = bane.ProfileConfig
-type FileSystem = bane.FsConfig
-type Network = bane.NetConfig
-type Capabilities = bane.CapConfig
+type FileSystem            = bane.FsConfig
+type Network               = bane.NetConfig
+type Capabilities          = bane.CapConfig

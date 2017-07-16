@@ -1,8 +1,10 @@
 package parse
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 
 	specs "github.com/opencontainers/runtime-spec/specs-go"
 )
@@ -50,6 +52,20 @@ func BuildSeccompConfig(specifiedDeclarations []string, declarationsDirectory st
 	seccompSpec.Syscalls = syscalls
 
 	return seccompSpec, nil
+}
+
+func WriteSeccompProfile(out io.Writer, specifiedDeclarations []string, declarationsDirectory string) error {
+	x, err := BuildSeccompConfig(specifiedDeclarations, declarationsDirectory)
+	if err != nil {
+		return err
+	}
+
+	seccompJSONProfile, err := json.MarshalIndent(x, "", " ")
+	if err != nil {
+		return err
+	}
+	out.Write(seccompJSONProfile)
+	return nil
 }
 
 // CollectSeccompActions takes a SystemCalls struct from a declaration and appends it to the outputted spec

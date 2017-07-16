@@ -2,16 +2,7 @@ package parse
 
 import "io"
 
-func packBaneConfig(d Declaration) AppArmorProfileConfig {
-	x := AppArmorProfileConfig{
-		Filesystem:   d.Filesystem,
-		Network:      d.Network,
-		Capabilities: d.Capabilities,
-	}
-	return x
-}
-
-func BuildApparmorConfig(out io.Writer, specifiedDeclarations []string, declarationsDirectory string) error {
+func WriteAppArmorProfile(out io.Writer, specifiedDeclarations []string, declarationsDirectory string) error {
 	Declarations, err := ReadDeclarationFiles(specifiedDeclarations, declarationsDirectory)
 	if err != nil {
 		return err
@@ -49,4 +40,13 @@ func BuildApparmorConfig(out io.Writer, specifiedDeclarations []string, declarat
 	}
 
 	return combinedConfig.Generate(out)
+}
+
+func packBaneConfig(d Declaration) AppArmorProfileConfig {
+	x := AppArmorProfileConfig{
+		Filesystem:   d.Filesystem,
+		Network:      d.Network,
+		Capabilities: d.Capabilities,
+	}
+	return x
 }

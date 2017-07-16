@@ -4,8 +4,6 @@ import (
 	"io"
 	"os"
 
-	"encoding/json"
-
 	parse "github.com/GrantSeltzer/karn/parse"
 	"github.com/spf13/cobra"
 )
@@ -42,22 +40,15 @@ func NewGenerateCmd(out io.Writer) *cobra.Command {
 
 func (genOpts *GenerateOptions) Run(out io.Writer, args []string) error {
 
-	x, err := parse.BuildSeccompConfig(args, genOpts.declarationDirectory)
-	if err != nil {
-		return err
-	}
-
-	seccompJSONProfile, err := json.MarshalIndent(x, "", " ")
-	if err != nil {
-		return err
-	}
-
 	if genOpts.seccomp {
-		out.Write(seccompJSONProfile)
+		err := parse.WriteSeccompProfile(out, args, genOpts.declarationDirectory)
+		if err != nil {
+			return err
+		}
 	}
 
 	if genOpts.apparmor {
-		err := parse.BuildApparmorConfig(out, args, genOpts.declarationDirectory)
+		err := parse.WriteAppArmorProfile(out, args, genOpts.declarationDirectory)
 		if err != nil {
 			return err
 		}
