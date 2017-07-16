@@ -5,15 +5,17 @@ Karn is an admin-friendly tool for creating [seccomp](https://en.wikipedia.org/w
 
 ----
 
-#### STATUS: Pre-alpha
+#### STATUS: alpha
 
-Right now only seccomp profiles are outputted. Support for specific seccomp arguments is also not yet supported (but will be soon). Apparmor profile output will be coming soon.
+Baseline functionality exists. Support for specific seccomp arguments is also not yet supported (but will be soon).
+
+Check out the issues for things that are not yet implemented. 
 
 ----
 
 ## Goal 
 
-Make it very easy for system admins of any level to correctly configure linux security modules in their containers. Configuring seccomp and apparmor involve writing very long configuration files. In practice most people just use [default ones](https://github.com/moby/moby/blob/master/profiles/seccomp/default.json) that people with more experience have written. Or they just don't use anything....
+Create a simple permission scheme for easily securing containers. Developers can just specify what their container will need permission to do and this tool will output the corresponding seccomp and apparmor configurations. This can be thought of as [iOS entitlements](https://developer.apple.com/library/content/documentation/Miscellaneous/Reference/EntitlementKeyReference/Chapters/AboutEntitlements.html) for containers! 
 
 ## How it works
 
@@ -49,12 +51,6 @@ Allow = ["chown"] # CAP_CHOWN
 
 These declarations should be stored in `~/.karn/declarations`. To take these two declarations to form seccomp and apparmor profiles, one would simply enter `karn generate chown dns`. You can also pass a different declaration directory with the `-d`/`--declarations` flag.
 
-## Important Design Principles
-
-1) All functionality of seccomp and apparmor need to be able to be expressed via any amount of declarations
-2) Karn should be `go get`'able. This means if someone wanted to embed the parsing into their container runtime, they'd easily be able to
-3) The community around Karn should promote sharing of declaration files. 
-
 ## Resources
 
 - [system calls](http://man7.org/linux/man-pages/man2/syscalls.2.html) - the 'API' of the kernel
@@ -62,7 +58,7 @@ These declarations should be stored in `~/.karn/declarations`. To take these two
 - [seccomp](http://man7.org/linux/man-pages/man2/seccomp.2.html) -  a system call filtering facility 
 - [apparmor](http://wiki.apparmor.net/index.php/Main_Page) - a security facility for specifying various security rules such as capabilities
 - [containers](https://www.docker.com/what-container) - linux processes that karn output can protect
-- [toml](https://github.com/toml-lang/toml) - the language of Karn
+- [toml](https://github.com/toml-lang/toml) - the language karn uses
 - [contained.af](https://contained.af/) - a CTF game meant to teach you about syscalls and capabilities
 
 Questions/Concerns? Open an issue or email me - grant at capsule8.com
