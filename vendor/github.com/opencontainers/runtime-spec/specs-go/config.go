@@ -9,7 +9,7 @@ type Spec struct {
 	// Process configures the container process.
 	Process *Process `json:"process,omitempty"`
 	// Root configures the container's root filesystem.
-	Root Root `json:"root"`
+	Root *Root `json:"root,omitempty"`
 	// Hostname configures the container's hostname.
 	Hostname string `json:"hostname,omitempty"`
 	// Mounts configures additional mounts (on top of Root).
@@ -45,7 +45,7 @@ type Process struct {
 	// Capabilities are Linux capabilities that are kept for the process.
 	Capabilities *LinuxCapabilities `json:"capabilities,omitempty" platform:"linux"`
 	// Rlimits specifies rlimit options to apply to the process.
-	Rlimits []LinuxRlimit `json:"rlimits,omitempty" platform:"linux"`
+	Rlimits []POSIXRlimit `json:"rlimits,omitempty" platform:"linux,solaris"`
 	// NoNewPrivileges controls whether additional privileges could be gained by processes in the container.
 	NoNewPrivileges bool `json:"noNewPrivileges,omitempty" platform:"linux"`
 	// ApparmorProfile specifies the apparmor profile for the container.
@@ -94,7 +94,7 @@ type User struct {
 // Root contains information about the container's root filesystem on the host.
 type Root struct {
 	// Path is the absolute path to the container's root filesystem.
-	Path string `json:"path,omitempty"`
+	Path string `json:"path"`
 	// Readonly makes the root filesystem for the container readonly before the process is executed.
 	Readonly bool `json:"readonly,omitempty"`
 }
@@ -202,8 +202,8 @@ type LinuxIDMapping struct {
 	Size uint32 `json:"size"`
 }
 
-// LinuxRlimit type and restrictions
-type LinuxRlimit struct {
+// POSIXRlimit type and restrictions
+type POSIXRlimit struct {
 	// Type of the rlimit to set
 	Type string `json:"type"`
 	// Hard is the hard limit for the specified type
@@ -273,15 +273,15 @@ type LinuxBlockIO struct {
 // LinuxMemory for Linux cgroup 'memory' resource management
 type LinuxMemory struct {
 	// Memory limit (in bytes).
-	Limit *uint64 `json:"limit,omitempty"`
+	Limit *int64 `json:"limit,omitempty"`
 	// Memory reservation or soft_limit (in bytes).
-	Reservation *uint64 `json:"reservation,omitempty"`
+	Reservation *int64 `json:"reservation,omitempty"`
 	// Total memory limit (memory + swap).
-	Swap *uint64 `json:"swap,omitempty"`
+	Swap *int64 `json:"swap,omitempty"`
 	// Kernel memory limit (in bytes).
-	Kernel *uint64 `json:"kernel,omitempty"`
+	Kernel *int64 `json:"kernel,omitempty"`
 	// Kernel memory limit for tcp (in bytes)
-	KernelTCP *uint64 `json:"kernelTCP,omitempty"`
+	KernelTCP *int64 `json:"kernelTCP,omitempty"`
 	// How aggressive the kernel will swap memory pages.
 	Swappiness *uint64 `json:"swappiness,omitempty"`
 }
@@ -550,7 +550,7 @@ const (
 type LinuxSeccompArg struct {
 	Index    uint                 `json:"index"`
 	Value    uint64               `json:"value"`
-	ValueTwo uint64               `json:"valueTwo"`
+	ValueTwo uint64               `json:"valueTwo,omiempty"`
 	Op       LinuxSeccompOperator `json:"op"`
 }
 

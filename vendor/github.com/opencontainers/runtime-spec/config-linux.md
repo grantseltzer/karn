@@ -110,7 +110,7 @@ Note that the number of mapping entries MAY be limited by the [kernel][user-name
 ## <a name="configLinuxDevices" />Devices
 
 **`devices`** (array of objects, OPTIONAL) lists devices that MUST be available in the container.
-The runtime MAY supply them however it likes (with [`mknod`][mknod.2], by bind mounting from the runtime mount namespace, etc.).
+The runtime MAY supply them however it likes (with [`mknod`][mknod.2], by bind mounting from the runtime mount namespace, using symlinks, etc.).
 
 Each entry has the following structure:
 
@@ -171,14 +171,18 @@ Also known as cgroups, they are used to restrict resource usage for a container 
 cgroups provide controls (through controllers) to restrict cpu, memory, IO, pids and network for the container.
 For more information, see the [kernel cgroups documentation][cgroup-v1].
 
-The path to the cgroups can be specified in the Spec via `cgroupsPath`.
-`cgroupsPath` can be used to either control the cgroup hierarchy for containers or to run a new process in an existing container.
-If `cgroupsPath` is:
-* ... an absolute path (starting with `/`), the runtime MUST take the path to be relative to the cgroup mount point.
-* ... a relative path (not starting with `/`), the runtime MAY interpret the path relative to a runtime-determined location in the cgroup hierarchy.
-* ... not specified, the runtime MAY define the default cgroup path.
+### <a name="configLinuxCgroupsPath" />Cgroups Path
+
+**`cgroupsPath`** (string, OPTIONAL) path to the cgroups.
+It can be used to either control the cgroups hierarchy for containers or to run a new process in an existing container.
+
+The value of `cgroupsPath` MUST be either an absolute path or a relative path.
+* In the case of an absolute path (starting with `/`), the runtime MUST take the path to be relative to the cgroups mount point.
+* In the case of a relative path (not starting with `/`), the runtime MAY interpret the path relative to a runtime-determined location in the cgroups hierarchy.
+
+If the value is specified, the runtime MUST consistently attach to the same place in the cgroups hierarchy given the same value of `cgroupsPath`.
+If the value is not specified, the runtime MAY define the default cgroups path.
 Runtimes MAY consider certain `cgroupsPath` values to be invalid, and MUST generate an error if this is the case.
-If a `cgroupsPath` value is specified, the runtime MUST consistently attach to the same place in the cgroup hierarchy given the same value of `cgroupsPath`.
 
 Implementations of the Spec can choose to name cgroups in any manner.
 The Spec does not include naming schema for cgroups.
@@ -270,13 +274,16 @@ For more information, see the kernel cgroups documentation about [memory][cgroup
 **`memory`** (object, OPTIONAL) represents the cgroup subsystem `memory` and it's used to set limits on the container's memory usage.
 For more information, see the kernel cgroups documentation about [memory][cgroup-v1-memory].
 
-The following parameters can be specified to set up the controller:
+Values for memory specify the limit in bytes, or `-1` for unlimited memory.
 
-* **`limit`** *(uint64, OPTIONAL)* - sets limit of memory usage in bytes
-* **`reservation`** *(uint64, OPTIONAL)* - sets soft limit of memory usage in bytes
-* **`swap`** *(uint64, OPTIONAL)* - sets limit of memory+Swap usage
-* **`kernel`** *(uint64, OPTIONAL)* - sets hard limit for kernel memory
-* **`kernelTCP`** *(uint64, OPTIONAL)* - sets hard limit in bytes for kernel TCP buffer memory
+* **`limit`** *(int64, OPTIONAL)* - sets limit of memory usage
+* **`reservation`** *(int64, OPTIONAL)* - sets soft limit of memory usage
+* **`swap`** *(int64, OPTIONAL)* - sets limit of memory+Swap usage
+* **`kernel`** *(int64, OPTIONAL)* - sets hard limit for kernel memory
+* **`kernelTCP`** *(int64, OPTIONAL)* - sets hard limit for kernel TCP buffer memory
+
+For `swappiness` the values are from 0 to 100. Higher means more swappy.
+
 * **`swappiness`** *(uint64, OPTIONAL)* - sets swappiness parameter of vmscan (See sysctl's vm.swappiness)
 
 #### Example
@@ -286,8 +293,8 @@ The following parameters can be specified to set up the controller:
         "limit": 536870912,
         "reservation": 536870912,
         "swap": 536870912,
-        "kernel": 0,
-        "kernelTCP": 0,
+        "kernel": -1,
+        "kernelTCP": -1,
         "swappiness": 0
     }
 ```
@@ -549,7 +556,7 @@ The following parameters can be specified to set up seccomp:
 
         * **`index`** *(uint, REQUIRED)* - the index for syscall arguments in seccomp.
         * **`value`** *(uint64, REQUIRED)* - the value for syscall arguments in seccomp.
-        * **`valueTwo`** *(uint64, REQUIRED)* - the value for syscall arguments in seccomp.
+        * **`valueTwo`** *(uint64, OPTIONAL)* - the value for syscall arguments in seccomp.
         * **`op`** *(string, REQUIRED)* - the operator for syscall arguments in seccomp.
             A valid list of constants as of libseccomp v2.3.2 is shown below.
 
