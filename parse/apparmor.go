@@ -2,7 +2,10 @@ package parse
 
 import "io"
 
+// WriteAppArmorProfile takes the specified declarations and writes an apparmor profile to out
 func WriteAppArmorProfile(out io.Writer, specifiedDeclarations []string, declarationsDirectory string) error {
+
+	// Read declarations into memory
 	Declarations, err := readDeclarationFiles(specifiedDeclarations, declarationsDirectory)
 	if err != nil {
 		return err
@@ -10,6 +13,7 @@ func WriteAppArmorProfile(out io.Writer, specifiedDeclarations []string, declara
 
 	combinedConfig := AppArmorProfileConfig{}
 
+	// Combine rules from all apparmor fields in the declarations
 	for _, v := range Declarations {
 		combinedConfig.Filesystem.ReadOnlyPaths =
 			append(combinedConfig.Filesystem.ReadOnlyPaths, v.Filesystem.ReadOnlyPaths...)

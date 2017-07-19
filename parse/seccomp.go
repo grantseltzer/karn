@@ -54,6 +54,7 @@ func BuildSeccompConfig(specifiedDeclarations []string, declarationsDirectory st
 	return seccompSpec, nil
 }
 
+// WriteSeccompProfile takes the specified declarations and writes a seccomp profile
 func WriteSeccompProfile(out io.Writer, specifiedDeclarations []string, declarationsDirectory string) error {
 	x, err := BuildSeccompConfig(specifiedDeclarations, declarationsDirectory)
 	if err != nil {
