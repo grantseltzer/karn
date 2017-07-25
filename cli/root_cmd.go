@@ -11,15 +11,9 @@ import (
 func NewRootCmd(arguments []string, out io.Writer) *cobra.Command {
 
 	var karnRootCommand = &cobra.Command{
-		Use:   "capsule8 [OPTIONS] <Profile_Name.toml>",
-		Short: "command-line client to capsule8 API",
+		Use:   "karn [OPTIONS] <Profile_Name.toml>",
+		Short: "A simple and easy to use linux security profile generator",
 		Run: func(cmd *cobra.Command, args []string) {
-
-			if len(args) == 0 {
-				fmt.Fprintf(os.Stderr, "not enough arguments, please specify a profile location")
-				fmt.Fprintf(os.Stderr, "Use `karn --help` for more info\n")
-				os.Exit(1)
-			}
 			// TODO: verify sub commands
 		},
 	}
@@ -31,6 +25,12 @@ func NewRootCmd(arguments []string, out io.Writer) *cobra.Command {
 		NewGenerateCmd(out),
 		NewVerifyCmd(),
 	)
+
+	if len(os.Args) == 1 {
+		fmt.Fprintf(os.Stderr, "not enough arguments, please specify a profile location\n\n")
+		karnRootCommand.Help()
+		os.Exit(1)
+	}
 
 	return karnRootCommand
 }
