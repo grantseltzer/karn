@@ -94,9 +94,13 @@ func collectSeccompActions(s SystemCalls, existingSyscalls []specs.LinuxSyscall)
 
 		// Check if there's already a matching rule TODO: check arguments
 		for i := range existingSyscalls {
+			// Traverse to action
 			if existingSyscalls[i].Action == action {
-				existingSyscalls[i].Names = append(existingSyscalls[i].Names, v...)
-				appended = true
+				// Append new syscall rule if it doesn't already exist
+				for _, syscallName := range v {
+					appendIfMissing(&existingSyscalls[i].Names, syscallName)
+					appended = true
+				}
 			}
 		}
 
