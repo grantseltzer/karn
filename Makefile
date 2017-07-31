@@ -29,6 +29,8 @@ install:
 	$(GOINSTALL) -o $(BINARY) ./...
 fmt: 
 	$(GOFMT) ./...
+test:
+	tests/run_unit_tests.sh
 vet:
 	$(GOVET) --all ./$*
 help:

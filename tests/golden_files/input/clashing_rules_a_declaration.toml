@@ -1,0 +1,12 @@
+[System-Calls]
+allow = [
+        "chown"
+]
+
+kill = [
+        "write"
+]
+
+trap = [
+        "open"
+]

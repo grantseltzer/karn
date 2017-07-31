@@ -1,0 +1,20 @@
+{
+ "defaultAction": "SCMP_ACT_ALLOW",
+ "architectures": [
+  "SCMP_ARCH_X86"
+ ],
+ "syscalls": [
+  {
+   "names": [
+    "chown",
+    "chown32",
+    "fchown",
+    "fchown32",
+    "fchownat",
+    "lchown",
+    "lchown32"
+   ],
+   "action": "SCMP_ACT_ALLOW"
+  }
+ ]
+}

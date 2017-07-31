@@ -1,0 +1,12 @@
+[System-Calls]
+errno = [
+        "chown"
+]
+
+trace = [
+        "write"
+]
+
+trap = [
+        "open:1:2:3:NE"
+]
