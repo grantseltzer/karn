@@ -13,16 +13,11 @@
     "fchown32",
     "fchownat",
     "lchown",
-    "lchown32"
-   ],
-   "action": "SCMP_ACT_ALLOW"
-  },
-  {
-   "names": [
     "sendto",
     "recvfrom",
     "socket",
-    "connect"
+    "connect",
+    "lchown32"
    ],
    "action": "SCMP_ACT_ALLOW"
   }

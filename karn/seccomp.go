@@ -1,4 +1,4 @@
-package parse
+package karn
 
 import (
 	"encoding/json"
@@ -23,7 +23,7 @@ func BuildSeccompConfig(specifiedDeclarations []string, declarationsDirectory st
 	}
 
 	// Parse specified declarations for seccomp default action
-	defaultAction, err := parseAction(determineSeccompDefault(Declarations))
+	defaultAction, err := ociSeccompAction(determineSeccompDefault(Declarations))
 	if err != nil {
 		return seccompSpec, err
 	}
@@ -75,7 +75,7 @@ func WriteSeccompProfile(out io.Writer, specifiedDeclarations []string, declarat
 // collectSeccompActions takes a SystemCalls struct from a declaration and appends it to the outputted spec
 func collectSeccompActions(s SystemCalls, existingSyscalls []specs.LinuxSyscall) ([]specs.LinuxSyscall, error) {
 
-	actions := map[string][]string{
+	specifiedSyscallRules := map[string][]string{
 		"allow": s.Allow,
 		"trap":  s.Trap,
 		"trace": s.Trace,
@@ -84,20 +84,20 @@ func collectSeccompActions(s SystemCalls, existingSyscalls []specs.LinuxSyscall)
 	}
 
 	// Iterate through new syscalls actions
-	for k, v := range actions {
+	for action, listOfSyscalls := range specifiedSyscallRules {
 
 		// Skip when no actions are specified
-		if v == nil {
+		if listOfSyscalls == nil {
 			continue
 		}
 
 		// Go through each syscall for k action
-		for _, syscallOfActionK := range v {
+		for _, syscallOfActionK := range listOfSyscalls {
 			syscall, args, err := collectArguments(syscallOfActionK)
 			if err != nil {
 				return existingSyscalls, err
 			}
-			action, err := parseAction(k)
+			action, err := ociSeccompAction(action)
 			if err != nil {
 				return existingSyscalls, err
 			}
@@ -119,10 +119,18 @@ func collectSeccompActions(s SystemCalls, existingSyscalls []specs.LinuxSyscall)
 func addSyscallRule(syscall string, action specs.LinuxSeccompAction, args specs.LinuxSeccompArg, existingSyscalls []specs.LinuxSyscall) []specs.LinuxSyscall {
 	appended := false
 
+	// Check if there's a matching rule to append the syscall name into
 	for i := range existingSyscalls {
+
+		debuglog(fmt.Sprintf("Adding rule for > %s <  to %+v", syscall, existingSyscalls[i]))
+
 		if existingSyscalls[i].Action == action && reflect.DeepEqual(existingSyscalls[i].Args, []specs.LinuxSeccompArg{args}) {
+			debuglog(fmt.Sprintf("Matching action and arguments: %+v %+v", action, existingSyscalls[i].Args))
 			existingSyscalls[i].Names = appendIfMissing(existingSyscalls[i].Names, syscall)
 			appended = true
+		} else {
+			debuglog(fmt.Sprintf("Did not match. %s != %s\nor\n %+v != %+v",
+				existingSyscalls[i].Action, action, existingSyscalls[i].Args, []specs.LinuxSeccompArg{args}))
 		}
 	}
 
@@ -139,8 +147,8 @@ func addSyscallRule(syscall string, action specs.LinuxSeccompAction, args specs.
 	return existingSyscalls
 }
 
-// collectArguments tak
-func collectArguments(syscall string) (string, specs.LinuxSeccompArg, error) {
+// collectArguments
+func collectArguments(syscall string) (syscallName string, arguments specs.LinuxSeccompArg, err error) {
 	// Split syscall from arguments
 	brokenByArgs := strings.Split(syscall, ":")
 
@@ -171,7 +179,7 @@ func collectArguments(syscall string) (string, specs.LinuxSeccompArg, error) {
 		return brokenByArgs[0], specs.LinuxSeccompArg{}, err
 	}
 
-	op, err := parseOperator(brokenByArgs[4])
+	op, err := ociSeccompOperator(brokenByArgs[4])
 	if err != nil {
 		return brokenByArgs[0], specs.LinuxSeccompArg{}, err
 	}
@@ -181,7 +189,7 @@ func collectArguments(syscall string) (string, specs.LinuxSeccompArg, error) {
 }
 
 // Take passed action, return the oci spec version of it
-func parseAction(action string) (specs.LinuxSeccompAction, error) {
+func ociSeccompAction(action string) (specs.LinuxSeccompAction, error) {
 
 	var actions = map[string]specs.LinuxSeccompAction{
 		"allow": specs.ActAllow,
@@ -275,7 +283,7 @@ func parseArchitecture(arch string) (specs.Arch, error) {
 	return a, nil
 }
 
-func parseOperator(operator string) (specs.LinuxSeccompOperator, error) {
+func ociSeccompOperator(operator string) (specs.LinuxSeccompOperator, error) {
 	operators := map[string]specs.LinuxSeccompOperator{
 		"NE": specs.OpNotEqual,
 		"LT": specs.OpLessThan,

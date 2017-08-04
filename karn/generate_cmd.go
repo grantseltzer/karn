@@ -1,12 +1,13 @@
-package cli
+package karn
 
 import (
 	"io"
 	"os"
 
-	parse "github.com/GrantSeltzer/karn/parse"
 	"github.com/spf13/cobra"
 )
+
+var global_debug bool
 
 type GenerateOptions struct {
 	declarationDirectory string
@@ -34,21 +35,21 @@ func NewGenerateCmd(out io.Writer) *cobra.Command {
 	g.StringVarP(&genOpts.declarationDirectory, "declarations", "d", homedir+"/.karn/declarations", "directory of declaration definitions")
 	g.BoolVar(&genOpts.seccomp, "seccomp", false, "output seccomp profile")
 	g.BoolVar(&genOpts.apparmor, "apparmor", false, "output apparmor profile")
-
+	g.BoolVar(&global_debug, "debug", false, "turn on logs for computation")
 	return generateCmd
 }
 
 func (genOpts *GenerateOptions) Run(out io.Writer, args []string) error {
 
 	if genOpts.seccomp {
-		err := parse.WriteSeccompProfile(out, args, genOpts.declarationDirectory)
+		err := WriteSeccompProfile(out, args, genOpts.declarationDirectory)
 		if err != nil {
 			return err
 		}
 	}
 
 	if genOpts.apparmor {
-		err := parse.WriteAppArmorProfile(out, args, genOpts.declarationDirectory)
+		err := WriteAppArmorProfile(out, args, genOpts.declarationDirectory)
 		if err != nil {
 			return err
 		}

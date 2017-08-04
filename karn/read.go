@@ -1,4 +1,4 @@
-package parse
+package karn
 
 import (
 	"io/ioutil"
