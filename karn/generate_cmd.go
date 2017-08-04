@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var global_debug bool
+var global_verbose bool
 
 type GenerateOptions struct {
 	declarationDirectory string
@@ -35,7 +35,7 @@ func NewGenerateCmd(out io.Writer) *cobra.Command {
 	g.StringVarP(&genOpts.declarationDirectory, "declarations", "d", homedir+"/.karn/declarations", "directory of declaration definitions")
 	g.BoolVar(&genOpts.seccomp, "seccomp", false, "output seccomp profile")
 	g.BoolVar(&genOpts.apparmor, "apparmor", false, "output apparmor profile")
-	g.BoolVar(&global_debug, "debug", false, "turn on logs for computation")
+	g.BoolVarP(&global_verbose, "verbose", "v", false, "turn on logs for computation")
 	return generateCmd
 }
 
