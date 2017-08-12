@@ -20,14 +20,14 @@ func readDeclarationFromFile(path string) (Declaration, error) {
 	return readDeclarationString(string(blob))
 }
 
-func readDeclarationFiles(specifiedDeclarations []string, directory string) (map[string]*Declaration, error) {
-	decs := map[string]*Declaration{}
-	for _, specifiedDeclaration := range specifiedDeclarations {
-		x, err := readDeclarationFromFile(directory + "/" + specifiedDeclaration + "_declaration.toml")
+func readDeclarationFiles(specifiedDeclarations []string, directory string) ([]Declaration, error) {
+	decs := []Declaration{}
+	for i := range specifiedDeclarations {
+		x, err := readDeclarationFromFile(directory + "/" + specifiedDeclarations[i] + "_declaration.toml")
 		if err != nil {
 			return decs, err
 		}
-		decs[specifiedDeclaration] = &x
+		decs[i] = &x
 	}
 
 	return decs, nil
