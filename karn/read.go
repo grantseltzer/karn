@@ -27,7 +27,7 @@ func readDeclarationFiles(specifiedDeclarations []string, directory string) ([]D
 		if err != nil {
 			return decs, err
 		}
-		decs[i] = &x
+		decs = append(decs, x)
 	}
 
 	return decs, nil

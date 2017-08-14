@@ -21,7 +21,7 @@ func NewGenerateCmd(out io.Writer) *cobra.Command {
 	genOpts := GenerateOptions{}
 
 	generateCmd := &cobra.Command{
-		Use:   "generate [<DECLARATION>,...]",
+		Use:   "generate [--seccomp/--apparmor] [options] [permissions]",
 		Short: "generate seccomp and apparmor profiles from a karn profile",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// TODO: verify arguments
@@ -53,6 +53,10 @@ func (genOpts *GenerateOptions) Run(out io.Writer, args []string) error {
 		if err != nil {
 			return err
 		}
+	}
+
+	if !genOpts.seccomp && !genOpts.apparmor {
+		out.Write([]byte("Please specify profile output type with --seccomp or --apparmor"))
 	}
 
 	return nil

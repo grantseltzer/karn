@@ -2,12 +2,9 @@ package karn
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"reflect"
-	"strconv"
-	"strings"
 
 	specs "github.com/opencontainers/runtime-spec/specs-go"
 )
@@ -22,39 +19,11 @@ func BuildSeccompConfig(specifiedDeclarations []string, declarationsDirectory st
 		return seccompSpec, err
 	}
 
-	// Parse specified declarations for seccomp default action
-	defaultAction, err := ociSeccompAction(determineSeccompDefault(Declarations))
+	x, err := combineDeclarations(Declarations)
 	if err != nil {
-		return seccompSpec, err
+		fmt.Println(err)
 	}
-
-	// Parse specified declarations for system architectures
-	architectures, err := determineSeccompArchitectures(Declarations)
-	if err != nil {
-		return seccompSpec, err
-	}
-
-	// Parse specified declarations for syscall filters
-	syscalls := []specs.LinuxSyscall{}
-	for _, i := range specifiedDeclarations {
-		dec := Declarations[i]
-		if dec == nil {
-			return seccompSpec, errors.New("declaration not found")
-		}
-		syscalls, err = collectSeccompActions(dec.SystemCalls, syscalls)
-		if err != nil {
-			return seccompSpec, err
-		}
-	}
-
-	// Create runtime-spec Seccomp profile, add actions 1 by 1 using runtime-tools/generate package, use defaultAction and architecture
-	seccompSpec.DefaultAction = specs.LinuxSeccompAction(defaultAction)
-	for _, a := range architectures {
-		seccompSpec.Architectures = append(seccompSpec.Architectures, specs.Arch(a))
-	}
-	seccompSpec.Syscalls = syscalls
-
-	return seccompSpec, nil
+	return x, nil
 }
 
 // WriteSeccompProfile takes the specified declarations and writes a seccomp profile
@@ -101,7 +70,7 @@ func collectSeccompActions(s SystemCalls, existingSyscalls []specs.LinuxSyscall)
 			if err != nil {
 				return existingSyscalls, err
 			}
-			existingSyscalls = addSyscallRule(syscall, action, args, existingSyscalls)
+			existingSyscalls = addSyscallRule(syscall, &action, args, existingSyscalls)
 
 		}
 	}
@@ -116,7 +85,7 @@ func collectSeccompActions(s SystemCalls, existingSyscalls []specs.LinuxSyscall)
 	return existingSyscalls, nil
 }
 
-func addSyscallRule(syscall string, action specs.LinuxSeccompAction, args specs.LinuxSeccompArg, existingSyscalls []specs.LinuxSyscall) []specs.LinuxSyscall {
+func addSyscallRule(syscall string, action *specs.LinuxSeccompAction, args specs.LinuxSeccompArg, existingSyscalls []specs.LinuxSyscall) []specs.LinuxSyscall {
 	appended := false
 
 	// Check if there's a matching rule to append the syscall name into
@@ -124,7 +93,7 @@ func addSyscallRule(syscall string, action specs.LinuxSeccompAction, args specs.
 
 		debuglog(fmt.Sprintf("Adding rule for > %s <  to %+v", syscall, existingSyscalls[i]))
 
-		if existingSyscalls[i].Action == action && reflect.DeepEqual(existingSyscalls[i].Args, []specs.LinuxSeccompArg{args}) {
+		if existingSyscalls[i].Action == *action && reflect.DeepEqual(existingSyscalls[i].Args, []specs.LinuxSeccompArg{args}) {
 			debuglog(fmt.Sprintf("Matching action and arguments: %+v %+v", action, existingSyscalls[i].Args))
 			existingSyscalls[i].Names = appendIfMissing(existingSyscalls[i].Names, syscall)
 			appended = true
@@ -138,72 +107,13 @@ func addSyscallRule(syscall string, action specs.LinuxSeccompAction, args specs.
 	if !appended {
 		linuxSyscall := specs.LinuxSyscall{}
 		linuxSyscall.Names = []string{string(syscall)}
-		linuxSyscall.Action = action
+		linuxSyscall.Action = *action
 		linuxSyscall.Args = []specs.LinuxSeccompArg{args}
 		existingSyscalls = append(existingSyscalls, linuxSyscall)
 		appended = false
 	}
 
 	return existingSyscalls
-}
-
-// collectArguments
-func collectArguments(syscall string) (syscallName string, arguments specs.LinuxSeccompArg, err error) {
-	// Split syscall from arguments
-	brokenByArgs := strings.Split(syscall, ":")
-
-	if len(brokenByArgs) == 1 {
-		return brokenByArgs[0], specs.LinuxSeccompArg{}, nil
-	}
-
-	// Validate proper arguments
-	if len(brokenByArgs) != 5 {
-		return brokenByArgs[0],
-			specs.LinuxSeccompArg{},
-			fmt.Errorf("malformed syscall arguments: %+v", brokenByArgs)
-	}
-
-	// Check type assertions work properly
-	index, err := strconv.ParseUint(brokenByArgs[1], 10, 64)
-	if err != nil {
-		return brokenByArgs[0], specs.LinuxSeccompArg{}, err
-	}
-
-	value, err := strconv.ParseUint(brokenByArgs[2], 10, 64)
-	if err != nil {
-		return brokenByArgs[0], specs.LinuxSeccompArg{}, err
-	}
-
-	valueTwo, err := strconv.ParseUint(brokenByArgs[3], 10, 64)
-	if err != nil {
-		return brokenByArgs[0], specs.LinuxSeccompArg{}, err
-	}
-
-	op, err := ociSeccompOperator(brokenByArgs[4])
-	if err != nil {
-		return brokenByArgs[0], specs.LinuxSeccompArg{}, err
-	}
-	arg := specs.LinuxSeccompArg{uint(index), value, valueTwo, op}
-
-	return brokenByArgs[0], arg, nil
-}
-
-// Take passed action, return the oci spec version of it
-func ociSeccompAction(action string) (specs.LinuxSeccompAction, error) {
-
-	var actions = map[string]specs.LinuxSeccompAction{
-		"allow": specs.ActAllow,
-		"errno": specs.ActErrno,
-		"kill":  specs.ActKill,
-		"trace": specs.ActTrace,
-		"trap":  specs.ActTrap,
-	}
-
-	a, ok := actions[action]
-	if !ok {
-		return "", fmt.Errorf("unrecognized action: %s", action)
-	}
-	return a, nil
 }
 
 // determineSeccompDefault takes the mapping of specified declarations and returns the default action
@@ -281,21 +191,4 @@ func parseArchitecture(arch string) (specs.Arch, error) {
 		return "", fmt.Errorf("unrecognized architecture: %s", arch)
 	}
 	return a, nil
-}
-
-func ociSeccompOperator(operator string) (specs.LinuxSeccompOperator, error) {
-	operators := map[string]specs.LinuxSeccompOperator{
-		"NE": specs.OpNotEqual,
-		"LT": specs.OpLessThan,
-		"LE": specs.OpLessEqual,
-		"EQ": specs.OpEqualTo,
-		"GE": specs.OpGreaterEqual,
-		"GT": specs.OpGreaterThan,
-		"ME": specs.OpMaskedEqual,
-	}
-	o, ok := operators[operator]
-	if !ok {
-		return "", fmt.Errorf("unrecognized operator: %s", operator)
-	}
-	return o, nil
 }
