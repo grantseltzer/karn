@@ -9,7 +9,7 @@ import (
 	specs "github.com/opencontainers/runtime-spec/specs-go"
 )
 
-func combineDeclarations(declarations []Declaration) (specs.LinuxSeccomp,  ,error) {
+func combineDeclarations(declarations []Declaration) (specs.LinuxSeccomp, error) {
 
 	var (
 		secAllows []string
@@ -174,10 +174,11 @@ func combineDeclarations(declarations []Declaration) (specs.LinuxSeccomp,  ,erro
 	if err != nil {
 		return seccompProfile, err
 	}
-
 	seccompProfile.DefaultAction = def
 
-	return seccompProfile, apparmorProfile, nil
+	//TODO: Combine apparmor fields, return that as well (using struct definitions for apparmor profile)
+
+	return seccompProfile, nil
 }
 
 // Take passes arch, return the oci spec version of it

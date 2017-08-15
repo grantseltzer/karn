@@ -28,7 +28,8 @@ type SystemCalls struct {
 	Errno []string `toml:"Errno,omitempty"`
 }
 
-// Type aliases for use from bane 
+
+// Type aliases for use from bane, temporary 
 
 type AppArmorProfileConfig = bane.ProfileConfig
 type FileSystem            = bane.FsConfig
