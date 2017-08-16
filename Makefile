@@ -20,7 +20,7 @@ BINARY="karn"
 all: build
 
 build:
-	$(GOBUILD) -o ./dist/$(BINARY) .
+	$(GOBUILD) -o ./dist/$(BINARY) ./cli && echo "karn built to ./dist"
 man:
 	gzip -fk karn.1
 clean:

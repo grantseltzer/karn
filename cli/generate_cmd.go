@@ -1,9 +1,10 @@
-package karn
+package main
 
 import (
 	"io"
 	"os"
 
+	"github.com/GrantSeltzer/karn/karn"
 	"github.com/spf13/cobra"
 )
 
@@ -21,7 +22,7 @@ func NewGenerateCmd(out io.Writer) *cobra.Command {
 	genOpts := GenerateOptions{}
 
 	generateCmd := &cobra.Command{
-		Use:   "generate [<DECLARATION>,...]",
+		Use:   "generate [--seccomp/--apparmor] [options] [permissions]",
 		Short: "generate seccomp and apparmor profiles from a karn profile",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			// TODO: verify arguments
@@ -42,17 +43,21 @@ func NewGenerateCmd(out io.Writer) *cobra.Command {
 func (genOpts *GenerateOptions) Run(out io.Writer, args []string) error {
 
 	if genOpts.seccomp {
-		err := WriteSeccompProfile(out, args, genOpts.declarationDirectory)
+		err := karn.WriteSeccompProfile(out, args, genOpts.declarationDirectory)
 		if err != nil {
 			return err
 		}
 	}
 
 	if genOpts.apparmor {
-		err := WriteAppArmorProfile(out, args, genOpts.declarationDirectory)
+		err := karn.WriteAppArmorProfile(out, args, genOpts.declarationDirectory)
 		if err != nil {
 			return err
 		}
+	}
+
+	if !genOpts.seccomp && !genOpts.apparmor {
+		out.Write([]byte("Please specify profile output type with --seccomp or --apparmor"))
 	}
 
 	return nil
