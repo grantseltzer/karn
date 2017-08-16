@@ -1,4 +1,4 @@
-package karn
+package main
 
 import (
 	"io/ioutil"

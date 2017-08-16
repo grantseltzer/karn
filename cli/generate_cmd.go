@@ -1,9 +1,10 @@
-package karn
+package main
 
 import (
 	"io"
 	"os"
 
+	"github.com/GrantSeltzer/karn/karn"
 	"github.com/spf13/cobra"
 )
 
@@ -42,14 +43,14 @@ func NewGenerateCmd(out io.Writer) *cobra.Command {
 func (genOpts *GenerateOptions) Run(out io.Writer, args []string) error {
 
 	if genOpts.seccomp {
-		err := WriteSeccompProfile(out, args, genOpts.declarationDirectory)
+		err := karn.WriteSeccompProfile(out, args, genOpts.declarationDirectory)
 		if err != nil {
 			return err
 		}
 	}
 
 	if genOpts.apparmor {
-		err := WriteAppArmorProfile(out, args, genOpts.declarationDirectory)
+		err := karn.WriteAppArmorProfile(out, args, genOpts.declarationDirectory)
 		if err != nil {
 			return err
 		}
