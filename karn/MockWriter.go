@@ -1,7 +1,6 @@
-package tests
+package karn
 
 import (
-	"fmt"
 	"reflect"
 )
 
@@ -15,7 +14,6 @@ func (mw *MockWriter) GetOutput() []byte {
 }
 
 func (mw *MockWriter) Write(p []byte) (int, error) {
-	fmt.Println("[MOCK] WRITING")
 	mw.Internal = p
 	return len(p), nil
 }

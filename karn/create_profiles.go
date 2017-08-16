@@ -9,7 +9,7 @@ import (
 )
 
 // createProfiles takes the declaration files and combines them into apparmor and seccomp profiles
-func createProfiles(declarations []Declaration) (specs.LinuxSeccomp, error) {
+func createProfiles(declarations []Declaration) (specs.LinuxSeccomp, []byte /*apparmor profile*/, error) {
 
 	var (
 		secAllows []string
@@ -69,6 +69,12 @@ func createProfiles(declarations []Declaration) (specs.LinuxSeccomp, error) {
 		}
 	}
 
+	///////////////////////
+	//		     // use labels/goto?
+	//  SECCOMP PARSING  //
+	//                   //
+	///////////////////////
+
 	// Determine the action for each syscall rule based on precedence
 	// explained here: https://www.kernel.org/doc/Documentation/prctl/seccomp_filter.txt
 	syscallRules := make(map[string]specs.LinuxSeccompAction)
@@ -109,7 +115,7 @@ func createProfiles(declarations []Declaration) (specs.LinuxSeccomp, error) {
 
 			name, args, err := collectArguments(syscall)
 			if err != nil {
-				return seccompProfile, err
+				return seccompProfile, []byte{}, err
 			}
 
 			new := specs.LinuxSyscall{
@@ -135,7 +141,7 @@ func createProfiles(declarations []Declaration) (specs.LinuxSeccomp, error) {
 		case specs.ActKill:
 			killRule.Names = append(killRule.Names, syscall)
 		default:
-			return seccompProfile, errors.New("unrecognized seccomp action")
+			return seccompProfile, []byte{}, errors.New("unrecognized seccomp action")
 		}
 	}
 
@@ -164,7 +170,7 @@ func createProfiles(declarations []Declaration) (specs.LinuxSeccomp, error) {
 	for _, i := range sysArches {
 		ociArch, err := ociArchitecture(i)
 		if err != nil {
-			return seccompProfile, fmt.Errorf("unrecognized architecture: ", i)
+			return seccompProfile, []byte{}, fmt.Errorf("unrecognized architecture: ", i)
 		}
 		seccompProfile.Architectures = append(seccompProfile.Architectures, ociArch)
 	}
@@ -172,11 +178,65 @@ func createProfiles(declarations []Declaration) (specs.LinuxSeccomp, error) {
 	// Set seccomp default action
 	def, err := ociSeccompAction(sysDefaultAction)
 	if err != nil {
-		return seccompProfile, err
+		return seccompProfile, []byte{}, err
 	}
 	seccompProfile.DefaultAction = def
 
-	//TODO: Combine apparmor fields, return that as well (using struct definitions for apparmor profile)
+	//////////////////////
+	//		    //
+	// APPARMOR PARSING //
+	//                  //
+	//////////////////////
 
-	return seccompProfile, nil
+	// Have shared capabilities map
+	capabilities := make(map[string]bool)
+
+	// set capabilities to allow
+	for _, cap := range capAllows {
+		capabilities[cap] = true
+	}
+
+	// set capabilities to deny, override any duplicates that allow
+	for _, cap := range capDenies {
+		capabilities[cap] = false
+	}
+
+	capabilitiesConfig := Capabilities{}
+
+	// Populate generatable capabilities configuration
+	for cap, allowed := range capabilities {
+		if allowed {
+			capabilitiesConfig.Allow = append(capabilitiesConfig.Allow, cap)
+		} else {
+			capabilitiesConfig.Deny = append(capabilitiesConfig.Deny, cap)
+		}
+	}
+
+	filesystemConfig := FileSystem{
+		ReadOnlyPaths:   fsReadOnlies,
+		LogOnWritePaths: fsLogPaths,
+		WritablePaths:   fsWritablePaths,
+		AllowExec:       fsAllowExecs, //TODO: duplicates in DenyExec should override AllowExec
+		DenyExec:        fsDenyExecs,
+	}
+
+	netConfig := Network{
+		Raw:       netRaw,
+		Packet:    netPacket,
+		Protocols: netProtocols,
+	}
+
+	apc := AppArmorProfileConfig{
+		Filesystem:   filesystemConfig,
+		Network:      netConfig,
+		Capabilities: capabilitiesConfig,
+	}
+
+	templateOut := NewMockWriter()
+	err = apc.Generate(templateOut)
+	if err != nil {
+		return seccompProfile, []byte{}, err
+	}
+	apparmorProfile := templateOut.GetOutput()
+	return seccompProfile, apparmorProfile, nil
 }

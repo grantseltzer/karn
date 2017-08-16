@@ -19,7 +19,7 @@ func WriteSeccompProfile(out io.Writer, specifiedDeclarations []string, declarat
 		return err
 	}
 
-	seccompProfile, err := createProfiles(Declarations)
+	seccompProfile, _, err := createProfiles(Declarations)
 	jsonSeccompProfile, err := json.MarshalIndent(seccompProfile, "", " ")
 	if err != nil {
 		return err
