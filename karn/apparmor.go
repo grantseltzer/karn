@@ -13,6 +13,9 @@ func WriteAppArmorProfile(out io.Writer, specifiedDeclarations []string, declara
 	}
 
 	_, apparmorProfile, err := createProfiles(Declarations)
+	if err != nil {
+		return err
+	}
 
 	written, err := out.Write(apparmorProfile)
 	if err != nil {

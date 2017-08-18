@@ -32,7 +32,7 @@ func createProfiles(declarations []Declaration) (specs.LinuxSeccomp, []byte /*ap
 		netProtocols []string
 
 		sysArches        []string
-		sysDefaultAction string
+		sysDefaultAction string = "errno"
 	)
 
 	// Combine declaration fields
@@ -183,7 +183,7 @@ func createProfiles(declarations []Declaration) (specs.LinuxSeccomp, []byte /*ap
 	seccompProfile.DefaultAction = def
 
 	//////////////////////
-	//		    //
+	//		            //
 	// APPARMOR PARSING //
 	//                  //
 	//////////////////////
