@@ -2,7 +2,7 @@
 # Author: Grant Seltzer (grant@capsule8.com)
 
 # Go parameters
-GOCMD=go1.9beta2
+GOCMD=go1.9rc2
 GOBUILD=$(GOCMD) build
 GOCLEAN=$(GOCMD) clean
 GOINSTALL=$(GOCMD) install
