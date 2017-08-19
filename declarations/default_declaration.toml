@@ -328,6 +328,49 @@ Allow = ["accept",
 		"s390_runtime_instr"
 ]
 
+[Filesystem]
+
+ReadOnlyPaths = [
+	"/bin/**",
+	"/boot/**",
+	"/dev/**",
+	"/etc/**",
+	"/home/**",
+	"/lib/**",
+	"/lib64/**",
+	"/media/**",
+	"/mnt/**",
+	"/opt/**",
+	"/proc/**",
+	"/root/**",
+	"/sbin/**",
+	"/srv/**",
+	"/tmp/**",
+	"/sys/**",
+	"/usr/**",
+]
+
+LogOnWritePaths = [
+	"/**"
+]
+
+# Should fill out for the application specific path
+WritablePaths = [] 
+AllowExec = []
+
+DenyExec = [
+	"/bin/sh"
+] 
+
+[Network]
+Raw = false 
+Packet = false 
+Protocols = [
+	"tcp",
+	"udp",
+	"icmp"
+]
+
 [System]
 DefaultSyscallAction = "errno"
 Architectures = ["x86", "x86_64", "x32"]
