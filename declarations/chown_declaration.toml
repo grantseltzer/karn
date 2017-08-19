@@ -1,0 +1,13 @@
+[System-Calls]
+Allow = [
+       "chown",
+       "chown32",
+       "fchown",
+       "fchown32",
+       "fchownat",
+       "lchown",
+       "lchown32"
+]
+
+[Capabilities]
+Allow = ["chown"]
