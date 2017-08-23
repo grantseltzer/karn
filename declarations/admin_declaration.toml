@@ -1,0 +1,20 @@
+[Capabilities]
+Allow = ["sys_admin"]
+
+[System-Calls]
+Allow = [
+    "bpf",
+    "clone",
+    "lookup_dcookie",
+    "mount",
+    "quotactl",
+    "setns",
+    "swapon",
+    "swapoff",
+    "umount",
+    "umount2",
+    "unshare",
+    "vm86",
+    "vm86old"
+]
+

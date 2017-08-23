@@ -1,6 +1,6 @@
 [System-Calls]
 
-# Default seccomp config, this is pretty inclusive but recommended for general purpose use
+# Default seccomp config, this is pretty inclusive but sufficient for general purpose use
 
 Allow = ["accept",
 		"accept4",
@@ -360,7 +360,7 @@ AllowExec = []
 
 DenyExec = [
 	"/bin/sh"
-] 
+]
 
 [Network]
 Raw = false 
