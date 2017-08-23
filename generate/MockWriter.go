@@ -1,4 +1,4 @@
-package karn
+package generate
 
 import (
 	"reflect"

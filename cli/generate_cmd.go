@@ -1,10 +1,10 @@
-package main
+package cli
 
 import (
 	"io"
 	"os"
 
-	"github.com/GrantSeltzer/karn/karn"
+	karn "github.com/GrantSeltzer/karn/generate"
 	"github.com/spf13/cobra"
 )
 
