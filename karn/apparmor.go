@@ -1,7 +1,6 @@
 package karn
 
 import (
-	"errors"
 	"io"
 )
 
@@ -17,13 +16,10 @@ func WriteAppArmorProfile(out io.Writer, specifiedDeclarations []string, declara
 		return err
 	}
 
-	written, err := out.Write(apparmorProfile)
+	err = apparmorProfile.Generate(out)
 	if err != nil {
 		return err
 	}
 
-	if written != len(apparmorProfile) {
-		return errors.New("Incomplete apparmor profile written")
-	}
 	return nil
 }

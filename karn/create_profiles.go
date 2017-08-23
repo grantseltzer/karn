@@ -9,7 +9,7 @@ import (
 )
 
 // createProfiles takes the declaration files and combines them into apparmor and seccomp profiles
-func createProfiles(declarations []Declaration) (specs.LinuxSeccomp, []byte /*apparmor profile*/, error) {
+func createProfiles(declarations []Declaration) (specs.LinuxSeccomp, AppArmorProfileConfig, error) {
 
 	var (
 		secAllows []string
@@ -115,7 +115,7 @@ func createProfiles(declarations []Declaration) (specs.LinuxSeccomp, []byte /*ap
 
 			name, args, err := collectArguments(syscall)
 			if err != nil {
-				return seccompProfile, []byte{}, err
+				return seccompProfile, AppArmorProfileConfig{}, err
 			}
 
 			new := specs.LinuxSyscall{
@@ -141,7 +141,7 @@ func createProfiles(declarations []Declaration) (specs.LinuxSeccomp, []byte /*ap
 		case specs.ActKill:
 			killRule.Names = append(killRule.Names, syscall)
 		default:
-			return seccompProfile, []byte{}, errors.New("unrecognized seccomp action")
+			return seccompProfile, AppArmorProfileConfig{}, errors.New("unrecognized seccomp action")
 		}
 	}
 
@@ -170,7 +170,7 @@ func createProfiles(declarations []Declaration) (specs.LinuxSeccomp, []byte /*ap
 	for _, i := range sysArches {
 		ociArch, err := ociArchitecture(i)
 		if err != nil {
-			return seccompProfile, []byte{}, fmt.Errorf("unrecognized architecture: ", i)
+			return seccompProfile, AppArmorProfileConfig{}, fmt.Errorf("unrecognized architecture: ", i)
 		}
 		seccompProfile.Architectures = append(seccompProfile.Architectures, ociArch)
 	}
@@ -178,7 +178,7 @@ func createProfiles(declarations []Declaration) (specs.LinuxSeccomp, []byte /*ap
 	// Set seccomp default action
 	def, err := ociSeccompAction(sysDefaultAction)
 	if err != nil {
-		return seccompProfile, []byte{}, err
+		return seccompProfile, AppArmorProfileConfig{}, err
 	}
 	seccompProfile.DefaultAction = def
 
@@ -202,7 +202,6 @@ func createProfiles(declarations []Declaration) (specs.LinuxSeccomp, []byte /*ap
 	}
 
 	capabilitiesConfig := Capabilities{}
-
 	// Populate generatable capabilities configuration
 	for cap, allowed := range capabilities {
 		if allowed {
@@ -232,11 +231,5 @@ func createProfiles(declarations []Declaration) (specs.LinuxSeccomp, []byte /*ap
 		Capabilities: capabilitiesConfig,
 	}
 
-	templateOut := NewMockWriter()
-	err = apc.Generate(templateOut)
-	if err != nil {
-		return seccompProfile, []byte{}, err
-	}
-	apparmorProfile := templateOut.GetOutput()
-	return seccompProfile, apparmorProfile, nil
+	return seccompProfile, apc, nil
 }

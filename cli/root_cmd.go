@@ -18,7 +18,7 @@ func NewRootCmd(arguments []string, out io.Writer) *cobra.Command {
 		},
 	}
 
-	// Uncomment to add flags/subcommands
+	// Uncomment to add flags
 	// rootFlags := karnRootCommand.PersistentFlags()
 
 	karnRootCommand.AddCommand(
