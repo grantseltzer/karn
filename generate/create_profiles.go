@@ -31,8 +31,8 @@ func createProfiles(declarations []Declaration) (specs.LinuxSeccomp, AppArmorPro
 		netPacket    bool
 		netProtocols []string
 
-		sysArches        []string
-		sysDefaultAction string
+		sysArches        []string = []string{"x86", "x86_64", "x32"}
+		sysDefaultAction string   = "errno"
 	)
 
 	// Combine declaration fields
