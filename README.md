@@ -5,8 +5,6 @@ Karn is an admin-friendly tool for creating OCI compliant [seccomp](https://en.w
 
 ----
 
-#### STATUS: beta
-
 Baseline functionality exists. At this point all possible filters and rules that you can manually express in seccomp and apparmor profiles can be created using karn. 
 
 What's left in terms of big goals is to write a set of standard implementation declarations. [This](https://github.com/moby/moby/blob/52f32818df8bad647e4c331878fa44317e724939/docs/security/seccomp.md#syscalls-blocked-by-the-default-profile) will be a valuable tool. If you have a history writing seccomp/apparmor profiles, please contribute! 
