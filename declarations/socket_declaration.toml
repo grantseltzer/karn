@@ -1,0 +1,13 @@
+[System-Calls]
+Allow = [
+    "socket"
+    "getsockopt",
+    "setsockopt",
+    "getsockname",
+    "socketpair"
+    "socket",
+    "socketcall",
+    "bind",
+    "listen",
+    "shutdown"
+]
