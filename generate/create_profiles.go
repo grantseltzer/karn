@@ -70,7 +70,7 @@ func createProfiles(declarations []Declaration) (specs.LinuxSeccomp, AppArmorPro
 	}
 
 	///////////////////////
-	//		             // use labels/goto?
+	//		             //
 	//  SECCOMP PARSING  //
 	//                   //
 	///////////////////////
@@ -132,6 +132,11 @@ func createProfiles(declarations []Declaration) (specs.LinuxSeccomp, AppArmorPro
 		switch seccompAction {
 		case specs.ActAllow:
 			allowRule.Names = append(allowRule.Names, syscall)
+			// Add corresponding capability needed to run syscall
+			cap := capabilityNeededForSyscall(syscall)
+			if cap != "" {
+				capAllows = append(capAllows)
+			}
 		case specs.ActTrap:
 			trapRule.Names = append(trapRule.Names, syscall)
 		case specs.ActTrace:
@@ -170,9 +175,12 @@ func createProfiles(declarations []Declaration) (specs.LinuxSeccomp, AppArmorPro
 	for _, i := range sysArches {
 		ociArch, err := ociArchitecture(i)
 		if err != nil {
-			return seccompProfile, AppArmorProfileConfig{}, fmt.Errorf("unrecognized architecture: ", i)
+			return seccompProfile, AppArmorProfileConfig{}, fmt.Errorf("%+v: unrecognized architecture: %s", err, i)
 		}
-		seccompProfile.Architectures = append(seccompProfile.Architectures, ociArch)
+
+		if !archContains(seccompProfile.Architectures, ociArch) {
+			seccompProfile.Architectures = append(seccompProfile.Architectures, ociArch)
+		}
 	}
 
 	// Set seccomp default action
@@ -232,4 +240,64 @@ func createProfiles(declarations []Declaration) (specs.LinuxSeccomp, AppArmorPro
 	}
 
 	return seccompProfile, apc, nil
+}
+
+// returns the capabilty that needs to be added to the apparmor for a specified syscall in seccomp
+func capabilityNeededForSyscall(syscall string) string {
+
+	relations := map[string]string{
+		"open_by_handle_at": "dac_read_search",
+		"bpf":               "sys_admin",
+		"clone":             "sys_admin",
+		"fanotify_init":     "sys_admin",
+		"lookup_dcookie":    "sys_admin",
+		"mount":             "sys_admin",
+		"name_to_handle_at": "sys_admin",
+		"perf_event_open":   "sys_admin",
+		"quotactl":          "sys_admin",
+		"setdomainname":     "sys_admin",
+		"sethostname":       "sys_admin",
+		"setns":             "sys_admin",
+		"umount":            "sys_admin",
+		"umount2":           "sys_admin",
+		"unshare":           "sys_admin",
+		"reboot":            "sys_boot",
+		"chroot":            "sys_chroot",
+		"delete_module":     "sys_module",
+		"init_module":       "sys_module",
+		"finit_module":      "sys_module",
+		"query_module":      "sys_module",
+		"acct":              "sys_pact",
+		"kcmp":              "sys_ptrace",
+		"process_vm_readv":  "sys_ptrace",
+		"process_vm_writev": "sys_ptrace",
+		"ptrace":            "sys_ptrace",
+		"iopl":              "sys_rawio",
+		"ioperm":            "sys_rawio",
+		"settimeofday":      "sys_time",
+		"stime":             "sys_time",
+		"clock_settime":     "sys_time",
+		"vhangup":           "sys_tty_config",
+		"fchownat":          "chown",
+		"lchown":            "chown",
+		"lchown32":          "chown",
+		"fchown32":          "chown",
+		"chown":             "chown",
+		"fchown":            "chown",
+		"chown32":           "chown",
+		"mlock":             "ipc_lock",
+		"mlock2":            "ipc_lock",
+		"mlockall":          "ipc_lock",
+	}
+
+	return relations[syscall]
+}
+
+func archContains(slice []specs.Arch, item specs.Arch) bool {
+	for _, element := range slice {
+		if element == item {
+			return true
+		}
+	}
+	return false
 }

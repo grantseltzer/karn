@@ -12,6 +12,7 @@ var global_verbose bool
 
 type GenerateOptions struct {
 	declarationDirectory string
+	unsafe               bool
 	seccomp              bool
 	apparmor             bool
 	outputDirectory      string
@@ -36,11 +37,16 @@ func NewGenerateCmd(out io.Writer) *cobra.Command {
 	g.StringVarP(&genOpts.declarationDirectory, "declarations", "d", homedir+"/.karn/declarations", "directory of declaration definitions")
 	g.BoolVar(&genOpts.seccomp, "seccomp", false, "output seccomp profile")
 	g.BoolVar(&genOpts.apparmor, "apparmor", false, "output apparmor profile")
-	g.BoolVarP(&global_verbose, "verbose", "v", false, "turn on logs for computation")
+	g.BoolVar(&genOpts.unsafe, "unsafe", false, "do not use minimum defaults that are recommended for all profiles")
+	g.BoolVarP(&global_verbose, "verbose", "v", false, "turn on verbose computation")
 	return generateCmd
 }
 
 func (genOpts *GenerateOptions) Run(out io.Writer, args []string) error {
+
+	if !contains(args, "safe") && !genOpts.unsafe {
+		args = append(args, "safe")
+	}
 
 	if genOpts.seccomp {
 		err := karn.WriteSeccompProfile(out, args, genOpts.declarationDirectory)
@@ -61,4 +67,13 @@ func (genOpts *GenerateOptions) Run(out io.Writer, args []string) error {
 	}
 
 	return nil
+}
+
+func contains(slice []string, item string) bool {
+	for _, element := range slice {
+		if element == item {
+			return true
+		}
+	}
+	return false
 }
