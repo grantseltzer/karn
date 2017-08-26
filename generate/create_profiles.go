@@ -64,7 +64,7 @@ func createProfiles(declarations []Declaration) (specs.LinuxSeccomp, AppArmorPro
 		// System Configurations
 		sysArches = append(sysArches, dec.System.Architectures...)
 
-		if dec.System.DefaultSyscallAction != "" {
+		if shouldOverwrite(dec.System.DefaultSyscallAction, sysDefaultAction) {
 			sysDefaultAction = dec.System.DefaultSyscallAction
 		}
 	}
@@ -302,6 +302,20 @@ func capabilityNeededForSyscall(syscall string) string {
 	}
 
 	return relations[syscall]
+}
+
+// for use with default action
+func shouldOverwrite(new, old string) bool {
+
+	precedence := map[string]int{
+		"allow": 1,
+		"trap":  2,
+		"trace": 3,
+		"errno": 4,
+		"kill":  5,
+	}
+
+	return (precedence[new] > precedence[old])
 }
 
 func archContains(slice []specs.Arch, item specs.Arch) bool {
