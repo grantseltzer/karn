@@ -77,26 +77,37 @@ func createProfiles(declarations []Declaration) (specs.LinuxSeccomp, AppArmorPro
 
 	// Determine the action for each syscall rule based on precedence
 	// explained here: https://www.kernel.org/doc/Documentation/prctl/seccomp_filter.txt
+	// ignore if default is already set to that action
 	syscallRules := make(map[string]specs.LinuxSeccompAction)
 
-	for _, syscall := range secAllows {
-		syscallRules[syscall] = specs.ActAllow
+	if sysDefaultAction != "allow" {
+		for _, syscall := range secAllows {
+			syscallRules[syscall] = specs.ActAllow
+		}
 	}
 
-	for _, syscall := range secTraces {
-		syscallRules[syscall] = specs.ActTrace
+	if sysDefaultAction != "trace" {
+		for _, syscall := range secTraces {
+			syscallRules[syscall] = specs.ActTrace
+		}
 	}
 
-	for _, syscall := range secTraps {
-		syscallRules[syscall] = specs.ActTrap
+	if sysDefaultAction != "trap" {
+		for _, syscall := range secTraps {
+			syscallRules[syscall] = specs.ActTrap
+		}
 	}
 
-	for _, syscall := range secErrnos {
-		syscallRules[syscall] = specs.ActErrno
+	if sysDefaultAction != "errno" {
+		for _, syscall := range secErrnos {
+			syscallRules[syscall] = specs.ActErrno
+		}
 	}
 
-	for _, syscall := range secKills {
-		syscallRules[syscall] = specs.ActKill
+	if sysDefaultAction != "kill" {
+		for _, syscall := range secKills {
+			syscallRules[syscall] = specs.ActKill
+		}
 	}
 
 	seccompProfile := specs.LinuxSeccomp{}
