@@ -4,7 +4,7 @@ Allow = [
     "getsockopt",
     "setsockopt",
     "getsockname",
-    "socketpair"
+    "socketpair",
     "socket",
     "socketcall",
     "bind",

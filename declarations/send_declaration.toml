@@ -1,0 +1,8 @@
+[System-Calls]
+Allow = [
+    "sendto",
+    "send",
+    "sendfile",
+    "sendmsg",
+    "sendmmsg"
+]
