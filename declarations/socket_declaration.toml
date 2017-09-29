@@ -1,6 +1,6 @@
 [System-Calls]
 Allow = [
-    "socket"
+    "socket",
     "getsockopt",
     "setsockopt",
     "getsockname",
