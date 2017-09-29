@@ -47,7 +47,7 @@ fmt: ## Verifies all files have men `gofmt`ed
 .PHONY: lint
 lint: ## Verifies `golint` passes
 	@echo "+ $@"
-	@golint ./... | grep -v '.pb.go:' | grep -v bindata.go | grep -v vendor | tee /dev/stderr
+	@golint ./... | grep -v '.pb.go:' | grep -v '_bindata.go' | grep -v vendor | tee /dev/stderr
 
 .PHONY: test
 test: ## Runs the go tests
@@ -57,7 +57,7 @@ test: ## Runs the go tests
 .PHONY: vet
 vet: ## Verifies `go vet` passes
 	@echo "+ $@"
-	@go vet $(shell go list ./... | grep -v vendor) | grep -v '.pb.go:' | tee /dev/stderr
+	@go vet $(shell go list ./... | grep -v vendor) | grep -v '.pb.go:' | grep -v '_bindata.go' | tee /dev/stderr
 
 .PHONY: install
 install: ## Installs the executable or package
