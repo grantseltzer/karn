@@ -23,7 +23,7 @@ GO_LDFLAGS_STATIC=-ldflags "-w $(CTIMEVAR) -extldflags -static"
 # List the GOOS and GOARCH to build
 GOOSARCHES = darwin/amd64 darwin/386 freebsd/amd64 freebsd/386 linux/arm linux/arm64 linux/amd64 linux/386 solaris/amd64 windows/amd64 windows/386
 
-all: build fmt lint test vet install ## Runs a clean, build, fmt, lint, test, vet and install
+all: bindata build fmt lint test vet install ## Runs a clean, build, fmt, lint, test, vet and install
 
 .PHONY: build
 build: $(NAME) ## Builds a dynamic executable or package
@@ -47,7 +47,7 @@ fmt: ## Verifies all files have men `gofmt`ed
 .PHONY: lint
 lint: ## Verifies `golint` passes
 	@echo "+ $@"
-	@golint ./... | grep -v '.pb.go:' | grep -v vendor | tee /dev/stderr
+	@golint ./... | grep -v '.pb.go:' | grep -v bindata.go | grep -v vendor | tee /dev/stderr
 
 .PHONY: test
 test: ## Runs the go tests
@@ -63,6 +63,11 @@ vet: ## Verifies `go vet` passes
 install: ## Installs the executable or package
 	@echo "+ $@"
 	@go install .
+
+.PHONY: bindata
+bindata:
+	@which go-bindata > /dev/null || go get github.com/jteeuwen/go-bindata/go-bindata/...
+	@go-bindata -pkg generate -o generate/declarations_bindata.go declarations/...
 
 define buildpretty
 mkdir -p $(BUILDDIR)/$(1)/$(2);
