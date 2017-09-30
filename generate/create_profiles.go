@@ -31,8 +31,8 @@ func createProfiles(declarations []Declaration) (specs.LinuxSeccomp, AppArmorPro
 		netPacket    bool
 		netProtocols []string
 
-		sysArches        []string = []string{"x86", "x86_64", "x32"}
-		sysDefaultAction string   = "errno"
+		sysArches        = []string{"x86", "x86_64", "x32"}
+		sysDefaultAction = "errno"
 	)
 
 	// Combine declaration fields
@@ -220,7 +220,7 @@ func createProfiles(declarations []Declaration) (specs.LinuxSeccomp, AppArmorPro
 		capabilities[cap] = false
 	}
 
-	capabilitiesConfig := Capabilities{}
+	capabilitiesConfig := CapConfig{}
 	// Populate generatable capabilities configuration
 	for cap, allowed := range capabilities {
 		if allowed {
@@ -230,7 +230,7 @@ func createProfiles(declarations []Declaration) (specs.LinuxSeccomp, AppArmorPro
 		}
 	}
 
-	filesystemConfig := FileSystem{
+	filesystemConfig := FsConfig{
 		ReadOnlyPaths:   fsReadOnlies,
 		LogOnWritePaths: fsLogPaths,
 		WritablePaths:   fsWritablePaths,
@@ -238,7 +238,7 @@ func createProfiles(declarations []Declaration) (specs.LinuxSeccomp, AppArmorPro
 		DenyExec:        fsDenyExecs,
 	}
 
-	netConfig := Network{
+	netConfig := NetConfig{
 		Raw:       netRaw,
 		Packet:    netPacket,
 		Protocols: netProtocols,
