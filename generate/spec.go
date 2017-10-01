@@ -31,10 +31,7 @@ type SystemCalls struct {
     Errno []string `toml:"Errno,omitempty"`
 }
 
-/**
- * Originally Written by Jess Frazelle
- * http://github.com/jessfraz/bane
- */
+// AppArmorProfileConfig defines the options for an apparmor profile
 type AppArmorProfileConfig struct {
     Name         string
     Filesystem   FileSystem
@@ -42,7 +39,7 @@ type AppArmorProfileConfig struct {
     Capabilities Capabilities
 }
 
-// FsConfig defines the filesystem options for a profile.
+// FileSystem defines the filesystem options for a profile.
 type FileSystem struct {
     ReadOnlyPaths   []string
     LogOnWritePaths []string
@@ -51,7 +48,7 @@ type FileSystem struct {
     DenyExec        []string
 }
 
-// NetConfig defines the network options for a profile.
+// Network defines the network options for a profile.
 // For example you probably don't need NetworkRaw if your
 // application doesn't `ping`.
 // Currently limited to AppArmor 2.3-2.6 rules.
@@ -61,7 +58,7 @@ type Network struct {
     Protocols []string
 }
 
-// CapConfig defines the allowed or denied kernel capabilities
+// Capabilities defines the allowed or denied kernel capabilities
 // for a profile.
 type Capabilities struct {
     Allow []string
