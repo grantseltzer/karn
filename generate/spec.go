@@ -10,9 +10,9 @@ import (
 // Declaration holds all the data from karn declaration files
 type Declaration struct {
     SystemCalls  SystemCalls  `toml:"System-Calls,omitempty"`
-    Capabilities CapConfig    `toml:"Capabilities,omitempty"`
-    Filesystem   FsConfig     `toml:"Filesystem,omitempty"`
-    Network      NetConfig    `toml:"Network,omitempty"`
+    Capabilities Capabilities `toml:"Capabilities,omitempty"`
+    Filesystem   FileSystem   `toml:"Filesystem,omitempty"`
+    Network      Network      `toml:"Network,omitempty"`
     System       System       `toml:"System,omitempty"`
 }
 
@@ -37,16 +37,13 @@ type SystemCalls struct {
  */
 type AppArmorProfileConfig struct {
     Name         string
-    Filesystem   FsConfig
-    Network      NetConfig
-    Capabilities CapConfig
-
-    Imports      []string
-    InnerImports []string
+    Filesystem   FileSystem
+    Network      Network
+    Capabilities Capabilities
 }
 
 // FsConfig defines the filesystem options for a profile.
-type FsConfig struct {
+type FileSystem struct {
     ReadOnlyPaths   []string
     LogOnWritePaths []string
     WritablePaths   []string
@@ -58,7 +55,7 @@ type FsConfig struct {
 // For example you probably don't need NetworkRaw if your
 // application doesn't `ping`.
 // Currently limited to AppArmor 2.3-2.6 rules.
-type NetConfig struct {
+type Network struct {
     Raw       bool
     Packet    bool
     Protocols []string
@@ -66,7 +63,7 @@ type NetConfig struct {
 
 // CapConfig defines the allowed or denied kernel capabilities
 // for a profile.
-type CapConfig struct {
+type Capabilities struct {
     Allow []string
     Deny  []string
 }
@@ -77,16 +74,6 @@ func (profile *AppArmorProfileConfig) Generate(out io.Writer) error {
     compiled, err := template.New("apparmor_profile").Parse(baseTemplate)
     if err != nil {
         return err
-    }
-
-    if tunablesExists("global") {
-        profile.Imports = append(profile.Imports, "#include <tunables/global>")
-    } else {
-        profile.Imports = append(profile.Imports, "@{PROC}=/proc/")
-    }
-
-    if abstractionsExists("base") {
-        profile.InnerImports = append(profile.InnerImports, "#include <abstractions/base>")
     }
 
     if err := compiled.Execute(out, profile); err != nil {

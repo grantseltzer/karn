@@ -220,7 +220,7 @@ func createProfiles(declarations []Declaration) (specs.LinuxSeccomp, AppArmorPro
 		capabilities[cap] = false
 	}
 
-	capabilitiesConfig := CapConfig{}
+	capabilitiesConfig := Capabilities{}
 	// Populate generatable capabilities configuration
 	for cap, allowed := range capabilities {
 		if allowed {
@@ -230,7 +230,7 @@ func createProfiles(declarations []Declaration) (specs.LinuxSeccomp, AppArmorPro
 		}
 	}
 
-	filesystemConfig := FsConfig{
+	filesystemConfig := FileSystem{
 		ReadOnlyPaths:   fsReadOnlies,
 		LogOnWritePaths: fsLogPaths,
 		WritablePaths:   fsWritablePaths,
@@ -238,7 +238,7 @@ func createProfiles(declarations []Declaration) (specs.LinuxSeccomp, AppArmorPro
 		DenyExec:        fsDenyExecs,
 	}
 
-	netConfig := NetConfig{
+	netConfig := Network{
 		Raw:       netRaw,
 		Packet:    netPacket,
 		Protocols: netProtocols,
