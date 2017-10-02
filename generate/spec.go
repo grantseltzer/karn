@@ -1,9 +1,7 @@
 package generate
 
 import (
-    "os"
     "io"
-    "path"
     "text/template"
 )
 
@@ -22,7 +20,7 @@ type System struct {
     DefaultSyscallAction string   `toml:"DefaultSyscallAction,omitempty"`
 }
 
-// Syscalls to handle with each supported action
+// SystemCalls to handle with each supported action
 type SystemCalls struct {
     Allow []string `toml:"Allow,omitempty"`
     Trap  []string `toml:"Trap,omitempty"`
@@ -73,7 +71,8 @@ func (profile *AppArmorProfileConfig) Generate(out io.Writer) error {
         return err
     }
 
-    if err := compiled.Execute(out, profile); err != nil {
+    err = compiled.Execute(out, profile)
+    if err != nil {
         return err
     }
 
