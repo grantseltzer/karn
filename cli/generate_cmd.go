@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var global_verbose bool
+var globalVerbose bool
 
 type GenerateOptions struct {
 	declarationDirectory string
@@ -38,7 +38,7 @@ func NewGenerateCmd(out io.Writer) *cobra.Command {
 	g.BoolVar(&genOpts.seccomp, "seccomp", false, "output seccomp profile")
 	g.BoolVar(&genOpts.apparmor, "apparmor", false, "output apparmor profile")
 	g.BoolVar(&genOpts.unsafe, "unsafe", false, "do not use minimum defaults that are recommended for all profiles")
-	g.BoolVarP(&global_verbose, "verbose", "v", false, "turn on verbose computation")
+	g.BoolVarP(&globalVerbose, "verbose", "v", false, "turn on verbose computation")
 	return generateCmd
 }
 

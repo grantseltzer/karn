@@ -3,7 +3,7 @@ package cli
 import "log"
 
 func debuglog(message string) {
-	if global_verbose {
+	if globalVerbose {
 		log.Println("[DEBUG]", message)
 	}
 }

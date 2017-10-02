@@ -1,4 +1,4 @@
-package apparmor
+package generate
 
 // baseTemplate for AppArmor profiles
 const baseTemplate = `
