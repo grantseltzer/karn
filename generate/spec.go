@@ -79,15 +79,3 @@ func (profile *AppArmorProfileConfig) Generate(out io.Writer) error {
 
     return nil
 }
-
-// check if the tunables/global exist
-func tunablesExists(name string) bool {
-    _, err := os.Stat(path.Join("/etc/apparmor.d/tunables", name))
-    return err == nil
-}
-
-// check if abstractions/base exist
-func abstractionsExists(name string) bool {
-    _, err := os.Stat(path.Join("/etc/apparmor.d/abstractions", name))
-    return err == nil
-}
