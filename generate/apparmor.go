@@ -1,6 +1,7 @@
 package generate
 
 import (
+	"html/template"
 	"io"
 )
 
@@ -17,6 +18,22 @@ func WriteAppArmorProfile(out io.Writer, specifiedDeclarations []string, declara
 	}
 
 	err = apparmorProfile.Generate(out)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Generate uses the baseTemplate to generate an apparmor profile
+// for the ProfileConfig passed.
+func (profile *AppArmorProfileConfig) Generate(out io.Writer) error {
+	compiled, err := template.New("apparmor_profile").Parse(baseTemplate)
+	if err != nil {
+		return err
+	}
+
+	err = compiled.Execute(out, profile)
 	if err != nil {
 		return err
 	}
