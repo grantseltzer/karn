@@ -8,6 +8,12 @@ PKG := github.com/grantseltzer/$(NAME)
 # Set the build dir, where built cross-compiled binaries will be output
 BUILDDIR := ${PREFIX}/cross
 
+# The location of the original declarations
+DECLARATIONDIR := ${PREFIX}/declarations
+
+# Set default declaration dir
+INSTALLDECLARATIONS := ~/.karn/
+
 # Populate version variables
 # Add to compile time flags
 VERSION := $(shell cat VERSION)
@@ -23,14 +29,14 @@ GO_LDFLAGS_STATIC=-ldflags "-w $(CTIMEVAR) -extldflags -static"
 # List the GOOS and GOARCH to build
 GOOSARCHES = darwin/amd64 darwin/386 freebsd/amd64 freebsd/386 linux/arm linux/arm64 linux/amd64 linux/386 solaris/amd64 windows/amd64 windows/386
 
-all: bindata build fmt lint test vet install ## Runs a clean, build, fmt, lint, test, vet and install
+all: bindata build fmt lint test vet install ## runs a clean, build, fmt, lint, test, vet and install
 
-.PHONY: build
-build: $(NAME) ## Builds a dynamic executable or package
+.phony: build
+build: $(name) ## builds a dynamic executable or package
 
-$(NAME): *.go VERSION
+$(name): *.go version
 	@echo "+ $@"
-	go build -tags "$(BUILDTAGS)" ${GO_LDFLAGS} -o $(NAME) .
+	go build -tags "$(buildtags)" ${go_ldflags} -o $(name) .
 
 .PHONY: static
 static: ## Builds a static executable
@@ -60,9 +66,25 @@ vet: ## Verifies `go vet` passes
 	@go vet $(shell go list ./... | grep -v vendor) | grep -v '.pb.go:' | grep -v '_bindata.go' | tee /dev/stderr
 
 .PHONY: install
-install: ## Installs the executable or package
-	@echo "+ $@"
+## Installs the executable or package
+install: install-bin create-declarations-dir install-man
+
+.PHONY: install-bin
+install-bin:
+	@echo "Installing binary"
 	@go install .
+
+.PHONY: create-declarations-dir
+create-declarations-dir:
+	@echo "Creating declarations dir at ~/.karn/declarations"
+	@mkdir -p ${INSTALLDECLARATIONS}
+	@cp -r ${DECLARATIONDIR} ${INSTALLDECLARATIONS}
+
+.PHONY: install-man
+install-man:
+	@echo "Installing man page"
+	@gzip -fk karn.1
+	@sudo cp karn.1.gz /usr/share/man/man1/
 
 .PHONY: bindata
 bindata:
@@ -125,5 +147,3 @@ tag: ## Create a new git tag to prepare to build a release
 .PHONY: help
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
-man:
-	gzip -fk karn.1
