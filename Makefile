@@ -82,7 +82,7 @@ create-declarations-dir:
 
 .PHONY: install-man
 install-man:
-	@echo "installing man page"
+	@echo "Installing man page"
 	@gzip -fk karn.1
 	@sudo cp karn.1.gz /usr/share/man/man1/
 
