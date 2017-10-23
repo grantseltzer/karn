@@ -2,6 +2,8 @@ package generate
 
 // baseTemplate for AppArmor profiles
 const baseTemplate = `
+profile {{.Name}} flags=(attach_disconnected,mediate_deleted) {
+  
 {{if .Network.Protocols}}
 {{range $value := .Network.Protocols}}  network inet {{$value}},
 {{end}}{{else}}
@@ -38,7 +40,6 @@ const baseTemplate = `
   deny @{PROC}/mem rwklx,
   deny @{PROC}/kmem rwklx,
   deny @{PROC}/kcore rwklx,
-  deny mount,
   deny /sys/[^f]*/** wklx,
   deny /sys/f[^s]*/** wklx,
   deny /sys/fs/[^c]*/** wklx,
