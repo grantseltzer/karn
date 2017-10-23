@@ -29,14 +29,15 @@ GO_LDFLAGS_STATIC=-ldflags "-w $(CTIMEVAR) -extldflags -static"
 # List the GOOS and GOARCH to build
 GOOSARCHES = darwin/amd64 darwin/386 freebsd/amd64 freebsd/386 linux/arm linux/arm64 linux/amd64 linux/386 solaris/amd64 windows/amd64 windows/386
 
-all: bindata build fmt lint test vet ## runs a clean, build, fmt, lint, test, vet and install
+all: bindata build fmt lint vet ## runs a clean, build, fmt, lint, test, vet and install
 
-.phony: build
-build: $(name) ## builds a dynamic executable or package
+.PHONY: build
+build: $(NAME) ## builds a dynamic executable or package
 
-$(name): *.go version
+$(NAME): *.go VERSION
 	@echo "+ $@"
-	go build -tags "$(buildtags)" ${go_ldflags} -o $(name) .
+	mkdir -p dist
+	go build -tags "$(BUILDTAGS)" ${GO_LDFLAGS} -o dist/$(NAME) .
 
 .PHONY: static
 static: ## Builds a static executable
