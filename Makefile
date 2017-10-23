@@ -29,7 +29,7 @@ GO_LDFLAGS_STATIC=-ldflags "-w $(CTIMEVAR) -extldflags -static"
 # List the GOOS and GOARCH to build
 GOOSARCHES = darwin/amd64 darwin/386 freebsd/amd64 freebsd/386 linux/arm linux/arm64 linux/amd64 linux/386 solaris/amd64 windows/amd64 windows/386
 
-all: bindata build fmt lint test vet install ## runs a clean, build, fmt, lint, test, vet and install
+all: bindata build fmt lint test vet ## runs a clean, build, fmt, lint, test, vet and install
 
 .phony: build
 build: $(name) ## builds a dynamic executable or package
