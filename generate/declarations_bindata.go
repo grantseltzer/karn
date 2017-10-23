@@ -94,7 +94,7 @@ func declarationsAdmin_declarationToml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "declarations/admin_declaration.toml", size: 253, mode: os.FileMode(436), modTime: time.Unix(1506659024, 0)}
+	info := bindataFileInfo{name: "declarations/admin_declaration.toml", size: 253, mode: os.FileMode(420), modTime: time.Unix(1503423003, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -114,7 +114,7 @@ func declarationsChown_declarationToml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "declarations/chown_declaration.toml", size: 184, mode: os.FileMode(436), modTime: time.Unix(1506659024, 0)}
+	info := bindataFileInfo{name: "declarations/chown_declaration.toml", size: 184, mode: os.FileMode(420), modTime: time.Unix(1503177423, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -134,7 +134,7 @@ func declarationsDefault_declarationToml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "declarations/default_declaration.toml", size: 5558, mode: os.FileMode(436), modTime: time.Unix(1506659024, 0)}
+	info := bindataFileInfo{name: "declarations/default_declaration.toml", size: 5558, mode: os.FileMode(420), modTime: time.Unix(1503422232, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -154,7 +154,7 @@ func declarationsDns_declarationToml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "declarations/dns_declaration.toml", size: 0, mode: os.FileMode(436), modTime: time.Unix(1506659024, 0)}
+	info := bindataFileInfo{name: "declarations/dns_declaration.toml", size: 0, mode: os.FileMode(420), modTime: time.Unix(1503093921, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -174,7 +174,7 @@ func declarationsFd_declarationToml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "declarations/fd_declaration.toml", size: 212, mode: os.FileMode(436), modTime: time.Unix(1506659024, 0)}
+	info := bindataFileInfo{name: "declarations/fd_declaration.toml", size: 212, mode: os.FileMode(420), modTime: time.Unix(1506442135, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -194,7 +194,7 @@ func declarationsFilesystem_declarationToml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "declarations/filesystem_declaration.toml", size: 959, mode: os.FileMode(436), modTime: time.Unix(1506659024, 0)}
+	info := bindataFileInfo{name: "declarations/filesystem_declaration.toml", size: 959, mode: os.FileMode(420), modTime: time.Unix(1506721011, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -214,7 +214,7 @@ func declarationsNaming_declarationToml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "declarations/naming_declaration.toml", size: 0, mode: os.FileMode(436), modTime: time.Unix(1506659024, 0)}
+	info := bindataFileInfo{name: "declarations/naming_declaration.toml", size: 0, mode: os.FileMode(420), modTime: time.Unix(1506721011, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -234,7 +234,7 @@ func declarationsReceive_declarationToml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "declarations/receive_declaration.toml", size: 84, mode: os.FileMode(436), modTime: time.Unix(1506659024, 0)}
+	info := bindataFileInfo{name: "declarations/receive_declaration.toml", size: 84, mode: os.FileMode(420), modTime: time.Unix(1504304228, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -254,7 +254,7 @@ func declarationsRemovable_storage_declarationToml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "declarations/removable_storage_declaration.toml", size: 1477, mode: os.FileMode(436), modTime: time.Unix(1506659024, 0)}
+	info := bindataFileInfo{name: "declarations/removable_storage_declaration.toml", size: 1477, mode: os.FileMode(420), modTime: time.Unix(1506441427, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -274,7 +274,7 @@ func declarationsSafe_declarationToml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "declarations/safe_declaration.toml", size: 1212, mode: os.FileMode(436), modTime: time.Unix(1506659024, 0)}
+	info := bindataFileInfo{name: "declarations/safe_declaration.toml", size: 1212, mode: os.FileMode(420), modTime: time.Unix(1503595674, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -294,7 +294,7 @@ func declarationsSend_declarationToml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "declarations/send_declaration.toml", size: 98, mode: os.FileMode(436), modTime: time.Unix(1506659024, 0)}
+	info := bindataFileInfo{name: "declarations/send_declaration.toml", size: 98, mode: os.FileMode(420), modTime: time.Unix(1504304067, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -314,7 +314,7 @@ func declarationsSocket_declarationToml() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "declarations/socket_declaration.toml", size: 187, mode: os.FileMode(436), modTime: time.Unix(1506659093, 0)}
+	info := bindataFileInfo{name: "declarations/socket_declaration.toml", size: 187, mode: os.FileMode(420), modTime: time.Unix(1506721232, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }

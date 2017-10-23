@@ -2,13 +2,6 @@ package generate
 
 // baseTemplate for AppArmor profiles
 const baseTemplate = `
-{{range $value := .Imports}}{{$value}}
-{{end}}
-
-profile {{.Name}} flags=(attach_disconnected,mediate_deleted) {
-{{range $value := .InnerImports}}  {{$value}}
-{{end}}
-
 {{if .Network.Protocols}}
 {{range $value := .Network.Protocols}}  network inet {{$value}},
 {{end}}{{else}}
