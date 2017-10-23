@@ -77,7 +77,7 @@ func ociSeccompAction(action string) (specs.LinuxSeccompAction, error) {
 
 	a, ok := actions[action]
 	if !ok {
-		return a, fmt.Errorf("unrecognized action: %s")
+		return a, fmt.Errorf("unrecognized action: %s", action)
 	}
 	return a, nil
 }
@@ -118,7 +118,12 @@ func collectArguments(syscall string) (syscallName string, arguments specs.Linux
 	if err != nil {
 		return brokenByArgs[0], specs.LinuxSeccompArg{}, err
 	}
-	arg := specs.LinuxSeccompArg{uint(index), value, valueTwo, op}
+	arg := specs.LinuxSeccompArg{
+		Index:    uint(index),
+		Value:    value,
+		ValueTwo: valueTwo,
+		Op:       op,
+	}
 
 	return brokenByArgs[0], arg, nil
 }
