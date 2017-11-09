@@ -108,7 +108,7 @@ cross: *.go VERSION ## Builds the cross-compiled binaries, creating a clean dire
 	$(foreach GOOSARCH,$(GOOSARCHES), $(call buildpretty,$(subst /,,$(dir $(GOOSARCH))),$(notdir $(GOOSARCH))))
 
 define buildrelease
-GOOS=$(1) GOARCH=$(2) CGO_ENABLED=0 go1.9rc2 build \
+GOOS=$(1) GOARCH=$(2) CGO_ENABLED=0 go build \
 	 -o $(BUILDDIR)/$(NAME)-$(1)-$(2) \
 	 -a -tags "$(BUILDTAGS) static_build netgo" \
 	 -installsuffix netgo ${GO_LDFLAGS_STATIC} .;
@@ -121,29 +121,16 @@ release: *.go VERSION ## Builds the cross-compiled binaries, naming them in such
 	@echo "+ $@"
 	$(foreach GOOSARCH,$(GOOSARCHES), $(call buildrelease,$(subst /,,$(dir $(GOOSARCH))),$(notdir $(GOOSARCH))))
 
-.PHONY: bump-version
-BUMP := patch
-bump-version: ## Bump the version in the version file. Set KIND to [ patch | major | minor ]
-	@go get -u github.com/jessfraz/junk/sembump # update sembump tool
-	$(eval NEW_VERSION = $(shell sembump --kind $(BUMP) $(VERSION)))
-	@echo "Bumping VERSION from $(VERSION) to $(NEW_VERSION)"
-	echo $(NEW_VERSION) > VERSION
-	@echo "Updating links to download binaries in README.md"
-	sed -i s/$(VERSION)/$(NEW_VERSION)/g README.md
-	git add VERSION README.md
-	git commit -vsam "Bump version to $(NEW_VERSION)"
-	@echo "Run make tag to create and push the tag for new version $(NEW_VERSION)"
-
 .PHONY: tag
 tag: ## Create a new git tag to prepare to build a release
 	git tag -sa $(VERSION) -m "$(VERSION)"
 	@echo "Run git push origin $(VERSION) to push your new tag to GitHub and trigger a travis build."
 
-# .PHONY: clean
-# clean: ## Cleanup any build binaries or packages
-# 	@echo "+ $@"
-# 	$(RM) $(NAME)
-# 	$(RM) -r $(BUILDDIR)
+ .PHONY: clean
+ clean: ## Cleanup any build binaries or packages
+ 	@echo "+ $@"
+ 	$(RM) $(NAME)
+ 	$(RM) -r $(BUILDDIR)
 
 .PHONY: help
 help:
