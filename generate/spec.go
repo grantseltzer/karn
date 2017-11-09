@@ -2,6 +2,7 @@ package generate
 
 // Declaration holds all the data from karn declaration files
 type Declaration struct {
+	Name         string
 	SystemCalls  SystemCalls  `toml:"System-Calls,omitempty"`
 	Capabilities Capabilities `toml:"Capabilities,omitempty"`
 	Filesystem   FileSystem   `toml:"Filesystem,omitempty"`

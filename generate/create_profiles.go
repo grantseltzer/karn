@@ -12,6 +12,8 @@ import (
 func createProfiles(declarations []Declaration) (specs.LinuxSeccomp, AppArmorProfileConfig, error) {
 
 	var (
+		apparmorProfileName string
+
 		secAllows []string
 		secTraps  []string
 		secTraces []string
@@ -37,6 +39,9 @@ func createProfiles(declarations []Declaration) (specs.LinuxSeccomp, AppArmorPro
 
 	// Combine declaration fields
 	for _, dec := range declarations {
+
+		// Profile name
+		apparmorProfileName = fmt.Sprintf("%s_%s", apparmorProfileName, dec.Name)
 
 		// System calls
 		secAllows = append(secAllows, dec.SystemCalls.Allow...)
@@ -67,6 +72,7 @@ func createProfiles(declarations []Declaration) (specs.LinuxSeccomp, AppArmorPro
 		if shouldOverwrite(dec.System.DefaultSyscallAction, sysDefaultAction) {
 			sysDefaultAction = dec.System.DefaultSyscallAction
 		}
+
 	}
 
 	///////////////////////
@@ -202,7 +208,7 @@ func createProfiles(declarations []Declaration) (specs.LinuxSeccomp, AppArmorPro
 	seccompProfile.DefaultAction = def
 
 	//////////////////////
-	//		            //
+	//		    //
 	// APPARMOR PARSING //
 	//                  //
 	//////////////////////
@@ -245,6 +251,7 @@ func createProfiles(declarations []Declaration) (specs.LinuxSeccomp, AppArmorPro
 	}
 
 	apc := AppArmorProfileConfig{
+		Name:         apparmorProfileName,
 		Filesystem:   filesystemConfig,
 		Network:      netConfig,
 		Capabilities: capabilitiesConfig,
