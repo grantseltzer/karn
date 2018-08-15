@@ -3,7 +3,13 @@
 
 Karn is an admin-friendly tool for creating OCI compliant [seccomp](https://en.wikipedia.org/wiki/Seccomp) and [apparmor](https://en.wikipedia.org/wiki/AppArmor) profiles. Originally proposed [here](https://gist.github.com/jessfraz/3a84023ff85471696ee33a20031b9e7b) as part of the [Linux Container Hardening](https://containerhardening.org/) project.
 
+
+![karn](karn.png)
+
 ----
+
+
+
 
 Baseline functionality exists. At this point all possible filters and rules that you can manually express in seccomp and apparmor profiles can be created using karn. 
 
