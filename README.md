@@ -75,4 +75,4 @@ These declarations should be stored in `~/.karn/declarations`. To take these two
 - [contained.af](https://contained.af/) - a CTF game meant to teach you about syscalls and capabilities
 
 ### Contact developer
-Questions/Concerns? Open an issue or email me - grant at capsule8.com
+Questions/Concerns? Open an issue or email me - grantseltzer at gmail.com
