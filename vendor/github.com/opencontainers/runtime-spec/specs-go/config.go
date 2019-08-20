@@ -4,7 +4,7 @@ import "os"
 
 // Spec is the base configuration for the container.
 type Spec struct {
-	// Version of the Open Container Runtime Specification with which the bundle complies.
+	// Version of the Open Container Initiative Runtime Specification with which the bundle complies.
 	Version string `json:"ociVersion"`
 	// Process configures the container process.
 	Process *Process `json:"process,omitempty"`
@@ -284,6 +284,8 @@ type LinuxMemory struct {
 	KernelTCP *int64 `json:"kernelTCP,omitempty"`
 	// How aggressive the kernel will swap memory pages.
 	Swappiness *uint64 `json:"swappiness,omitempty"`
+	// DisableOOMKiller disables the OOM killer for out of memory conditions
+	DisableOOMKiller *bool `json:"disableOOMKiller,omitempty"`
 }
 
 // LinuxCPU for Linux cgroup 'cpu' resource management
@@ -322,8 +324,6 @@ type LinuxNetwork struct {
 type LinuxResources struct {
 	// Devices configures the device whitelist.
 	Devices []LinuxDeviceCgroup `json:"devices,omitempty"`
-	// DisableOOMKiller disables the OOM killer for out of memory conditions
-	DisableOOMKiller *bool `json:"disableOOMKiller,omitempty"`
 	// Memory restriction configuration
 	Memory *LinuxMemory `json:"memory,omitempty"`
 	// CPU resource restriction configuration
@@ -550,7 +550,7 @@ const (
 type LinuxSeccompArg struct {
 	Index    uint                 `json:"index"`
 	Value    uint64               `json:"value"`
-	ValueTwo uint64               `json:"valueTwo,omiempty"`
+	ValueTwo uint64               `json:"valueTwo,omitempty"`
 	Op       LinuxSeccompOperator `json:"op"`
 }
 
