@@ -1,0 +1,13 @@
+[System-Calls]
+Allow = [
+    "open",
+    "sendto",
+    "send",
+    "sendmsg",
+    "recvfrom",
+    "recvmsg",
+    "recvmmsg",
+    "recv",
+    "socket",
+    "connect"
+]

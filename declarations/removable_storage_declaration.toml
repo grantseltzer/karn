@@ -4,7 +4,7 @@
 # cap_sys_admin which no.
 
 Allow = [
-    "creat", # Replace filesystem syscalls with include once implemented (issue #25)
+    "creat",
     "open",
     "truncate64",
     "ftruncate64",
@@ -65,7 +65,7 @@ Allow = [
     "sync_file_range",
     "sync",
     "sync_file_range2",
-    "msync", # end of fs syscalls
+    "msync",
     "close",
     "mmap",
     "munmap",
@@ -76,7 +76,7 @@ Allow = [
     "write",
     "flock",
     "fcntl",
-    "ioctl" # end of fd syscalls
+    "ioctl" 
 ]
 
 [Filesystem]

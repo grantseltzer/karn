@@ -1,0 +1,16 @@
+[System-Calls]
+Allow = [
+    "fork",
+    "vfork",
+    "kill",
+    "getpriority",
+    "setpriority",
+    "setrlimit",
+    "getrlimit",
+    "prlimit",
+    "setpgid",
+    "getpgid",
+    "setpgrp",
+    "getpgrp",
+    "setsid"
+]

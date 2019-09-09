@@ -23,7 +23,6 @@ func NewRootCmd(arguments []string, out io.Writer) *cobra.Command {
 
 	karnRootCommand.AddCommand(
 		NewGenerateCmd(out),
-		NewVerifyCmd(),
 	)
 
 	if len(os.Args) == 1 {
