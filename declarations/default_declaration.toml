@@ -1,6 +1,6 @@
 [System-Calls]
 
-# Default seccomp config, this is pretty inclusive but sufficient for general purpose use
+# Default docker seccomp config, this is pretty inclusive but sufficient for general purpose use
 
 Allow = ["accept",
 		"accept4",

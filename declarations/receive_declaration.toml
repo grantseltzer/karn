@@ -1,7 +1,0 @@
-[System-Calls]
-Allow = [
-    "recvmmsg",
-    "recv",
-    "recvfrom",
-    "recvmsg"
-]

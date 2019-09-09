@@ -9,5 +9,4 @@ Allow = [
     "socketcall",
     "bind",
     "listen",
-    "shutdown"
 ]
