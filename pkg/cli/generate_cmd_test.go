@@ -18,7 +18,7 @@ func TestGenerateSeccomp(t *testing.T) {
 	defer os.RemoveAll(tempOutputDirectory) // clean up
 
 	GenOptions := GenerateOptions{
-		declarationDirectory: "../tests/golden_files/input",
+		declarationDirectory: "../test_files/input",
 		seccomp:              true,
 		apparmor:             false,
 		outputDirectory:      tempOutputDirectory,
@@ -33,7 +33,7 @@ func TestGenerateSeccomp(t *testing.T) {
 			t.Error(err)
 		}
 
-		written, err := ioutil.ReadFile("../tests/golden_files/output/clashing_rules_seccomp_golden.json")
+		written, err := ioutil.ReadFile("../test_files/output/clashing_rules_seccomp_golden.json")
 		if err != nil {
 			t.Error(err)
 		}
@@ -51,7 +51,7 @@ func TestGenerateSeccomp(t *testing.T) {
 			t.Error(err)
 		}
 
-		written, err := ioutil.ReadFile("../tests/golden_files/output/chown_dns_seccomp_golden.json")
+		written, err := ioutil.ReadFile("../test_files/output/chown_dns_seccomp_golden.json")
 		if err != nil {
 			t.Error(err)
 		}
@@ -69,7 +69,7 @@ func TestGenerateSeccomp(t *testing.T) {
 			t.Error(err)
 		}
 
-		written, err := ioutil.ReadFile("../tests/golden_files/output/chown_seccomp_golden.json")
+		written, err := ioutil.ReadFile("../test_files/output/chown_seccomp_golden.json")
 		if err != nil {
 			t.Error(err)
 		}
@@ -89,7 +89,7 @@ func TestGenerateApparmor(t *testing.T) {
 	defer os.RemoveAll(tempOutputDirectory) // clean up
 
 	GenOptions := GenerateOptions{
-		declarationDirectory: "../tests/golden_files/input",
+		declarationDirectory: "../test_files/input",
 		seccomp:              false,
 		apparmor:             true,
 		outputDirectory:      tempOutputDirectory,
@@ -104,7 +104,7 @@ func TestGenerateApparmor(t *testing.T) {
 			t.Error(err)
 		}
 
-		written, err := ioutil.ReadFile("../tests/golden_files/output/clashing_rules_apparmor_golden")
+		written, err := ioutil.ReadFile("../test_files/output/clashing_rules_apparmor_golden")
 		if err != nil {
 			t.Error(err)
 		}
@@ -122,7 +122,7 @@ func TestGenerateApparmor(t *testing.T) {
 			t.Error(err)
 		}
 
-		written, err := ioutil.ReadFile("../tests/golden_files/output/chown_dns_apparmor_golden")
+		written, err := ioutil.ReadFile("../test_files/output/chown_dns_apparmor_golden")
 		if err != nil {
 			t.Error(err)
 		}
@@ -140,7 +140,7 @@ func TestGenerateApparmor(t *testing.T) {
 			t.Error(err)
 		}
 
-		written, err := ioutil.ReadFile("../tests/golden_files/output/chown_apparmor_golden")
+		written, err := ioutil.ReadFile("../test_files/output/chown_apparmor_golden")
 		if err != nil {
 			t.Error(err)
 		}
