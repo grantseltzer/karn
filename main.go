@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/GrantSeltzer/karn/cli"
+	"github.com/grantseltzer/karn/pkg/cli"
 )
 
 func main() {

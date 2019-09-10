@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/GrantSeltzer/karn/tests"
+	"github.com/grantseltzer/karn/tests"
 )
 
 func TestGenerateSeccomp(t *testing.T) {

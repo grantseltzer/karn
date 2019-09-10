@@ -4,7 +4,7 @@ import (
 	"io"
 	"os"
 
-	karn "github.com/GrantSeltzer/karn/generate"
+	karn "github.com/grantseltzer/karn/pkg/generate"
 	"github.com/spf13/cobra"
 )
 
