@@ -6,8 +6,22 @@ import (
 	seccomp "github.com/seccomp/libseccomp-golang"
 )
 
-func ApplyEntitlements(entitlements []Entitlement) error {
-	filter, err := libseccomp.NewFilter(libseccomp.ActErrno)
+// BlacklistEntitlements will disallow the capabilities described by the entitlements
+// that are passed. Any system call not included in the entitlements will be allowed by default
+func BlacklistEntitlements(entitlements []Entitlement) error {
+	return applyEntitlements(entitlements, libseccomp.ActAllow, libseccomp.ActErrno)
+}
+
+// WhitelistEntitlements will allow the capabilities described by the entitlements
+// that are passed. Any system call not included in the entitlements will be disallowed by default
+func WhitelistEntitlements(entitlements []Entitlement) error {
+	return applyEntitlements(entitlements, libseccomp.ActErrno, libseccomp.ActAllow)
+}
+
+// applyEntitlements can be used to whitelist or blacklist a set of entitlements
+func applyEntitlements(entitlements []Entitlement, defaultAction, entitlementAction libseccomp.ScmpAction) error {
+
+	filter, err := libseccomp.NewFilter(defaultAction)
 	if err != nil {
 		return err
 	}
@@ -23,14 +37,14 @@ func ApplyEntitlements(entitlements []Entitlement) error {
 	}
 
 	for _, e := range entitlements {
-		for _, s := range e.Allowed {
+		for _, s := range e.Syscalls {
 
 			syscall, err := seccomp.GetSyscallFromNameByArch(s, arch)
 			if err != nil {
 				return errors.Wrap(err, "could not detect syscall name")
 			}
 
-			err = filter.AddRule(syscall, seccomp.ActAllow)
+			err = filter.AddRule(syscall, entitlementAction)
 			if err != nil {
 				return errors.Wrap(err, "could not apply syscall rule")
 			}
