@@ -3,8 +3,6 @@
 
 Karn is a system for high level entitlements for seccomp and apparmor. It can be used to generate OCI compliant profiles that you can pass to your container runtime. 
 
-`Coming Soon: Go library for applying entitlements`
-
 ----
 
 ## Table of contents
