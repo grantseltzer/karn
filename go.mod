@@ -1,4 +1,4 @@
-module github.com/grantseltzer/selkie
+module github.com/grantseltzer/karn
 
 go 1.13
 

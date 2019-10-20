@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	libentitlements "github.com/grantseltzer/selkie/pkg/entitlements"
+	libentitlements "github.com/grantseltzer/karn/pkg/entitlements"
 	"github.com/spf13/cobra"
 )
 
