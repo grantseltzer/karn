@@ -3,30 +3,29 @@ package entitlements
 import (
 	"github.com/pkg/errors"
 	libseccomp "github.com/seccomp/libseccomp-golang"
-	seccomp "github.com/seccomp/libseccomp-golang"
 )
 
-// BlacklistEntitlements will disallow the capabilities described by the entitlements
-// that are passed. Any system call not included in the entitlements will be allowed by default
-func BlacklistEntitlements(entitlements []Entitlement) error {
-	return applyEntitlements(entitlements, libseccomp.ActAllow, libseccomp.ActErrno)
+// ApplyEntitlements will allow the syscalls described by the entitlements
+// that are passed.
+func ApplyEntitlements(entitlements []Entitlement) error {
+	entitlementsToDeny := removeEntitlementsFromDefaultDeny(entitlements)
+	return applyEntitlements(entitlementsToDeny, libseccomp.ActAllow, libseccomp.ActErrno)
 }
 
-// WhitelistEntitlements will allow the capabilities described by the entitlements
-// that are passed. Any system call not included in the entitlements will be disallowed by default
-func WhitelistEntitlements(entitlements []Entitlement) error {
-	return applyEntitlements(entitlements, libseccomp.ActErrno, libseccomp.ActAllow)
-}
+var alreadyInstalledFilter = false
 
-// applyEntitlements can be used to whitelist or blacklist a set of entitlements
+// applyEntitlements can be used to allow or deny a set of entitlements
 func applyEntitlements(entitlements []Entitlement, defaultAction, entitlementAction libseccomp.ScmpAction) error {
+	if alreadyInstalledFilter {
+		return errors.New("you may only apply entitlements once")
+	}
 
 	filter, err := libseccomp.NewFilter(defaultAction)
 	if err != nil {
 		return err
 	}
 
-	arch, err := seccomp.GetNativeArch()
+	arch, err := libseccomp.GetNativeArch()
 	if err != nil {
 		return errors.Wrap(err, "could not detect architecture for seccomp filter")
 	}
@@ -39,11 +38,12 @@ func applyEntitlements(entitlements []Entitlement, defaultAction, entitlementAct
 	for _, e := range entitlements {
 		for _, s := range e.Syscalls {
 
-			syscall, err := seccomp.GetSyscallFromNameByArch(s, arch)
+			syscall, err := libseccomp.GetSyscallFromNameByArch(s, arch)
 			if err != nil {
 				return errors.Wrap(err, "could not detect syscall name")
 			}
 
+			logIfEnabled("\tapplying policy: %s for: %v\n", entitlementAction, syscall)
 			err = filter.AddRule(syscall, entitlementAction)
 			if err != nil {
 				return errors.Wrap(err, "could not apply syscall rule")
@@ -55,10 +55,39 @@ func applyEntitlements(entitlements []Entitlement, defaultAction, entitlementAct
 		return errors.New("invalid seccomp filter")
 	}
 
+	logIfEnabled("loading seccomp filter into kernel")
+	alreadyInstalledFilter = true
 	err = filter.Load()
 	if err != nil {
 		return errors.Wrap(err, "could not load seccomp filter into kernel")
 	}
 
 	return nil
+}
+
+// removeEntitlementsFromDefaultDeny returns a slice of entitlements created
+// by removing the specified entitlements from the default ones
+func removeEntitlementsFromDefaultDeny(entitlements []Entitlement) []Entitlement {
+
+	defaultDenyCopy := copyOfDefaultDeny()
+
+	for _, e := range entitlements {
+		logIfEnabled("allowing entitlement: %s\n", e.Name)
+		delete(defaultDenyCopy, e.Name)
+	}
+
+	deny := []Entitlement{}
+	for _, v := range defaultDenyCopy {
+		logIfEnabled("denying entitlement: %s\n", v.Name)
+		deny = append(deny, v)
+	}
+	return deny
+}
+
+func copyOfDefaultDeny() map[string]Entitlement {
+	x := map[string]Entitlement{}
+	for k, v := range defaultDeny {
+		x[k] = *v
+	}
+	return x
 }
