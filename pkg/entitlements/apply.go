@@ -66,6 +66,8 @@ func applyEntitlements(entitlements []Entitlement, defaultAction, entitlementAct
 		return errors.Wrap(err, "could not load seccomp filter into kernel")
 	}
 
+	logIfEnabled("loaded seccomp filter into kernel")
+
 	return nil
 }
 
