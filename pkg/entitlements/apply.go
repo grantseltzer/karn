@@ -20,6 +20,7 @@ func applyEntitlements(entitlements []Entitlement, defaultAction, entitlementAct
 		return errors.New("you may only apply entitlements once")
 	}
 
+	logIfEnabled("creating new filter with default action: %s\n", defaultAction.String())
 	filter, err := libseccomp.NewFilter(defaultAction)
 	if err != nil {
 		return err
@@ -30,6 +31,7 @@ func applyEntitlements(entitlements []Entitlement, defaultAction, entitlementAct
 		return errors.Wrap(err, "could not detect architecture for seccomp filter")
 	}
 
+	logIfEnabled("adding arch to filter: %s\n", arch.String())
 	err = filter.AddArch(arch)
 	if err != nil {
 		return errors.Wrap(err, "could not add architecture to seccomp filter")
@@ -43,7 +45,9 @@ func applyEntitlements(entitlements []Entitlement, defaultAction, entitlementAct
 				return errors.Wrap(err, "could not detect syscall name")
 			}
 
-			logIfEnabled("\tapplying policy: %s for: %v\n", entitlementAction, syscall)
+			syscallName, _ := syscall.GetName()
+			logIfEnabled("\tapplying policy: %s for: %s\n", entitlementAction.String(), syscallName)
+
 			err = filter.AddRule(syscall, entitlementAction)
 			if err != nil {
 				return errors.Wrap(err, "could not apply syscall rule")
