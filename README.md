@@ -123,7 +123,6 @@ From there, we're going to create the profile and then pass it with the containe
  "syscalls": [
   {
    "names": [
-    "ntp_adjtime",
     "adjtimex",
     "clock_adjtime",
     "clock_settime",

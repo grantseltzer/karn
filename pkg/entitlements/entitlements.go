@@ -68,7 +68,6 @@ var Mount = Entitlement{
 var SetTime = Entitlement{
 	Name: "set_time",
 	Syscalls: []string{
-		"ntp_adjtime",
 		"adjtimex",
 		"clock_adjtime",
 		"clock_settime",
