@@ -5,8 +5,15 @@ karn-cli:
 	mkdir -p ./bin
 	go build -o ./bin/karn ./cmd/cli
 
+.PHONY: c
+c:
+	go build -mod=vendor -o ./bin/karn.so -buildmode=c-shared ./c/main.go
+
 clean:
 	rm ./bin/*
 
 help:
-	@echo  "just type 'make' to build the karn cli. test target coming soon" 
+	@echo  "Targets:"
+	@echo  "    karn-cli (default) - build karn cli to ./bin/karn"
+	@echo  "    c -
+	@echo  "    clean - remove bin contents"
