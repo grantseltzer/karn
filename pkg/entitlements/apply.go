@@ -26,6 +26,11 @@ func applyEntitlements(entitlements []Entitlement, defaultAction, entitlementAct
 		return err
 	}
 
+	err = filter.SetNoNewPrivsBit(true)
+	if err != nil {
+		return errors.Wrap(err, "could not set no new privs bit")
+	}
+
 	arch, err := libseccomp.GetNativeArch()
 	if err != nil {
 		return errors.Wrap(err, "could not detect architecture for seccomp filter")
