@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "i'm a test file" > testfile.txt
+
 go build -mod=vendor -o karn.so -buildmode=c-shared main.go
 if [ $? -ne 0 ]; then
     echo failed to build shared object
