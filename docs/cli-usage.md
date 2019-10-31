@@ -1,6 +1,8 @@
 # Karn CLI Usage
 
-`karn` takes a space seperated list of entitlement names as arguments. You can use the `--list` flag to list the available entitlements.
+`karn` takes a space seperated list of entitlement names as arguments. The output is a OCI-compliant seccomp profile. This is a JSON blob that you can pass to a container runtime to enforce seccomp in your container. 
+
+You can use the `--list` flag to list the available entitlements.
 
 ### Listing entitlements 
 
