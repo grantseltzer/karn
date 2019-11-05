@@ -8,13 +8,13 @@
     <img src="karn.jpg" alt="karn" width="800"/>
 </p>
 
+<a href="https://godoc.org/github.com/grantseltzer/karn/pkg/entitlements"><img src="https://godoc.org/github.com/grantseltzer/karn/pkg/entitlements?status.svg" alt="GoDoc"></a>
+
 ## Table of Contents
 * [How it Works](#how-it-works)
 * [Entitlements](#entitlements)
 * [Dependencies](#dependencies)
 * [Quick Start](#quick-start)
-    * [Library](#library)
-    * [Containers](#containers)
 
 ## How it works
 
@@ -34,158 +34,8 @@ See godoc [here](https://godoc.org/github.com/grantseltzer/karn/go/pkg/entitleme
 
 ## Dependencies
 
-If you are using Karn as a library for enforcing seccomp you must have:
+See [docs/dependencies.md](./docs/dependencies.md)
 
-- libseccomp-dev [debian-like](https://launchpad.net/ubuntu/+source/libseccomp) / [centos-like](https://rpmfind.net/linux/rpm2html/search.php?query=libseccomp-devel)
+## Quickstart
 
-If you are using Karn to generate OCI compliant seccomp profiles to pass to containers, there are no external dependencies.
-
-## Quick Start
-
-* [Library](#library)
-* [Containers](#containers)
-
-#### Library
-Let's say you're writing a simple HTTP webserver in go:
-
-```
-package main
-
-import (
-    "fmt"
-    "net/http"
-)
-
-func main() {
-    http.HandleFunc("/", HelloServer)
-    http.ListenAndServe(":8080", nil)
-}
-
-func HelloServer(w http.ResponseWriter, r *http.Request) {
-    fmt.Fprintf(w, "I can modprobe if you exploit me, %s!", r.URL.Path[1:])
-}
-```
-
-This program just handles incoming HTTP requests on a network sockets. I didn't include anything exploitable here for simplicity but try to imagine the possibility of an application vulnerablity. 
-
-The only relevant sounding entitlement is `NetworkConnection`. Let's apply it:
-
-
-```go
-package main
-
-import (
-    "fmt"
-    "net/http"
-    Karn "github.com/grantseltzer/Karn/go/pkg/entitlements"
-)
-
-func main() {
-
-    neededEntitlements := []Karn.Entitlement{
-        "NetworkConnection"
-    }
-
-    err := Karn.ApplyEntitlements(neededEntitlements)
-    if err != nil {
-        log.Fatal(err)
-    }
-
-    http.HandleFunc("/", HelloServer)
-    http.ListenAndServe(":8080", nil)
-}
-
-func HelloServer(w http.ResponseWriter, r *http.Request) {
-    fmt.Fprintf(w, "I can modprobe if you exploit me, %s!", r.URL.Path[1:])
-}
-```
-
-From here you wouldn't notice any difference in your applications runtime, except now it has a lot less system calls that it can use!
-
-#### Containers
-
-Let's use the same example as above. This time, we're running the application inside a container. In that case it's better to pass a seccomp profile to the container runtime instead of inside the application. This way the seccomp rules will be applied to every process inside the container.
-
-We can build the karn CLI with a simple `make`. 
-
-From there, we're going to create the profile and then pass it with the container when we start it.
-
-```bash
-[*] ./bin/karn network_connection > seccomp_profile.json
-
-[*] cat seccomp_profile
-{
- "defaultAction": "SCMP_ACT_ALLOW",
- "architectures": [
-  "SCMP_ARCH_X86",
-  "SCMP_ARCH_X86_64"
- ],
- "syscalls": [
-  {
-   "names": [
-    "adjtimex",
-    "clock_adjtime",
-    "clock_settime",
-    "settimeofday",
-    "stime",
-    "pivot_root",
-    "kexec_file_load",
-    "kexec_load",
-    "ioperm",
-    "iopl",
-    "quotactl",
-    "execve",
-    "execveat",
-    "fork",
-    "vfork",
-    "swapon",
-    "swapoff",
-    "mount",
-    "umount",
-    "umount2",
-    "sysfs",
-    "_sysctl",
-    "personality",
-    "ustat",
-    "nfsservctl",
-    "vm86",
-    "uselib",
-    "vm86old",
-    "reboot",
-    "add_key",
-    "request_key",
-    "keyctl",
-    "unshare",
-    "setns",
-    "mknod",
-    "get_mempolicy",
-    "set_mempolicy",
-    "move_pages",
-    "mbind",
-    "acct",
-    "ptrace",
-    "lookup_dcookie",
-    "bpf",
-    "perf_event_open",
-    "process_vm_readv",
-    "process_vm_writev",
-    "create_module",
-    "delete_module",
-    "finit_module",
-    "get_kernel_syms",
-    "init_module",
-    "query_module",
-    "chown",
-    "fchown",
-    "fchownat",
-    "lchown"
-   ],
-   "action": "SCMP_ACT_ERRNO"
-  }
- ]
-}
-
-[*] docker build # (building your container with your application)
-
-[*] docker run --rm -d --security-opt seccomp=./seccomp_profile.json <your_image> <you_app_command_line>
-```
+See [docs/quickstart.md](./docs/quickstart.md)

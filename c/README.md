@@ -1,1 +1,3 @@
-Coming soon - the pkg/entitltements library written in C
+Compile with: `gcc -o karnTest ./karn.c ./karn.so`
+
+See example usage directory

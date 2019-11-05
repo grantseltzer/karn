@@ -15,5 +15,5 @@ clean:
 help:
 	@echo  "Targets:"
 	@echo  "    karn-cli (default) - build karn cli to ./bin/karn"
-	@echo  "    c -
+	@echo  "    c - create karn.so and karn.h files
 	@echo  "    clean - remove bin contents"

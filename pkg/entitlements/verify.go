@@ -32,6 +32,8 @@ func ListEntitlements() []string {
 	return list
 }
 
+// ValidEntitlement will return true if the named entitlement
+// is recognized by the karn library
 func ValidEntitlement(entitlementName string) bool {
 	if defaultDeny[entitlementName] == nil {
 		return false

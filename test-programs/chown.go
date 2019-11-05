@@ -18,7 +18,7 @@ import (
 func main() {
 
 	entitlements := []en.Entitlement{
-		en.Mount,
+		en.Chown, // remove to test
 	}
 
 	err := en.ApplyEntitlements(entitlements)
