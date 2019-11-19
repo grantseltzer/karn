@@ -50,7 +50,12 @@ var NetworkConnection = Entitlement{
 		"socketcall",
 		"bind",
 		"listen",
-		//TODO: Probably need ones for sending/receiving messages
+		"sendto",
+		"send",
+		"sendmsg",
+		"recv",
+		"recvfrom",
+		"recvmsg",
 	},
 }
 
