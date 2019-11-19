@@ -3,7 +3,7 @@ default: karn-cli
 .PHONY: karn-cli
 karn-cli:
 	mkdir -p ./bin
-	go build -o ./bin/karn ./cmd/cli
+	go build -o ./bin/karn ./cmd/generate
 
 .PHONY: c
 c:
