@@ -59,6 +59,45 @@ var NetworkConnection = Entitlement{
 	},
 }
 
+// InboundConnection describes the system calls needed for receiving network packets
+// This includes creating and using sockets
+var InboundConnection = Entitlement{
+	Name: "inbound_connection",
+	Syscalls: []string{
+		"socket",
+		"getsockopt",
+		"setsockopt",
+		"getsockname",
+		"socketpair",
+		"socket",
+		"socketcall",
+		"bind",
+		"listen",
+		"recv",
+		"recvfrom",
+		"recvmsg",
+	},
+}
+
+// OutboundConnection describes the system calls needed for sending network packets
+// This includes creating and using sockets
+var OutboundConnection = Entitlement{
+	Name: "outbound_connection",
+	Syscalls: []string{
+		"socket",
+		"getsockopt",
+		"setsockopt",
+		"getsockname",
+		"socketpair",
+		"socket",
+		"socketcall",
+		"bind",
+		"sendto",
+		"send",
+		"sendmsg",
+	},
+}
+
 // Mount describes the system calls for mounting and unmounting file systems
 var Mount = Entitlement{
 	Name: "mount",
