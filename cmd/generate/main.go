@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 
 	libentitlements "github.com/grantseltzer/karn/pkg/entitlements"
 	"github.com/spf13/cobra"
@@ -48,7 +49,7 @@ func main() {
 
 	err := karnCommand.Execute()
 	if err != nil {
-
+		log.Fatal(err)
 	}
 }
 
