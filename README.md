@@ -1,5 +1,6 @@
 # Karn
 
+
 <p align="center">
     <b>Use Karn to enforce seccomp rules in your code. Select the entitlements that your application needs and not the ones it doesn't need!</b>
 </p>
@@ -7,6 +8,8 @@
 <p align="center">
     <img src="karn.jpg" alt="karn" width="800"/>
 </p>
+
+See [associated blog post](https://www.grant.pizza/blog/karn/)
 
 <a href="https://godoc.org/github.com/grantseltzer/karn/pkg/entitlements"><img src="https://godoc.org/github.com/grantseltzer/karn/pkg/entitlements?status.svg" alt="GoDoc"></a>
 
