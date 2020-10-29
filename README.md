@@ -33,7 +33,7 @@ Karn can be used for generating profiles for containers, or can be used as a lib
 
 ## Entitlements
 
-See godoc [here]https://pkg.go.dev/github.com/grantseltzer/karn@v1.0.0/pkg/entitlements)
+See godoc [here](https://pkg.go.dev/github.com/grantseltzer/karn@v1.0.0/pkg/entitlements)
 
 ## Dependencies
 
