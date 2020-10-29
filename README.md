@@ -11,7 +11,7 @@
 
 See [associated blog post](https://www.grant.pizza/blog/karn/)
 
-<a href="https://godoc.org/github.com/grantseltzer/karn/pkg/entitlements"><img src="https://godoc.org/github.com/grantseltzer/karn/pkg/entitlements?status.svg" alt="GoDoc"></a>
+<a href="https://pkg.go.dev/github.com/grantseltzer/karn@v1.0.0/pkg/entitlements"><img src="https://godoc.org/github.com/grantseltzer/karn/pkg/entitlements?status.svg" alt="GoDoc"></a>
 
 ## Table of Contents
 * [How it Works](#how-it-works)
@@ -33,7 +33,7 @@ Karn can be used for generating profiles for containers, or can be used as a lib
 
 ## Entitlements
 
-See godoc [here](https://godoc.org/github.com/grantseltzer/karn/go/pkg/entitlements)
+See godoc [here]https://pkg.go.dev/github.com/grantseltzer/karn@v1.0.0/pkg/entitlements)
 
 ## Dependencies
 
